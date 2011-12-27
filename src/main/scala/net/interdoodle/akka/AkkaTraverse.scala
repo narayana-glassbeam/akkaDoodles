@@ -3,7 +3,9 @@ package net.interdoodle.akka
 import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 
 
-/** Taken from Viktor Klang's "Future of Akka" presentation
+/** Transforms a Traversable[X] ⇒ Future[Traversable[Y]]
+ * Use it as a parallel map that preserves order
+ * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaTraverse extends App {

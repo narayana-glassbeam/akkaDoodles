@@ -3,7 +3,9 @@ package net.interdoodle.akka
 import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 
 
-/** Taken from Viktor Klang's "Future of Akka" presentation
+/** Non-blocking reduce
+ * Executed on the Thread that completes the last Future
+ * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaReduce extends App {

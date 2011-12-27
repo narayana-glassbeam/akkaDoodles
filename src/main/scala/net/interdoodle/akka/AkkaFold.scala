@@ -3,7 +3,9 @@ package net.interdoodle.akka
 import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 
 
-/** Taken from Viktor Klang's "Future of Akka" presentation
+/** Non-blocking fold
+ * Executed on the Thread of the last Future to be completed
+ * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaFold extends App {
