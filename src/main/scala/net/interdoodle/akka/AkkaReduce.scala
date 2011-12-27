@@ -1,5 +1,6 @@
 package net.interdoodle.akka
 
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 
 
@@ -8,14 +9,21 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
  * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
-object AkkaReduce extends App {
+object AkkaReduce extends App with Actor {
+  val system = ActorSystem("MySystem")
+  implicit val defaultDispatcher = system.dispatcher
+
 
   def expensiveCalc(x:Int) = { x * x }
   
+
   def main(args:Array[String]) {
-    // Need an implicit MessageDispatcher somehow. What is the simplest example possible?
-    // What other options exist for providing a MessageDispatcher?
-    val futures = (1 to 100) map (x ⇒ Future { expensiveCalc(x) })
-    val sum = Future.fold(futures)(_ + _)(0)
+    val map = (1 to 100) map (x => Future { expensiveCalc(x) })
+    Future.reduce(map)(_ + _) onComplete {
+      _ match {
+        case Left(exception) => println(exception)
+        case Right(result) => println(result)
+      }
+    }
   }
 }

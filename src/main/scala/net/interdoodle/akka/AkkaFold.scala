@@ -1,5 +1,6 @@
 package net.interdoodle.akka
 
+import akka.actor.ActorSystem
 import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 
 
@@ -9,18 +10,14 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaFold extends App {
+  val system = ActorSystem("MySystem")
+  implicit val defaultDispatcher = system.dispatcher
+
 
   def expensiveCalc(x:Int) = { x * x }
-  
+
   def main(args:Array[String]) {
-    // Need an implicit MessageDispatcher somehow. What is the simplest example possible?
-    // What other options exist for providing a MessageDispatcher?
-    val map = (1 to 100) map (x => Future { expensiveCalc(x) })
-    Future.reduce(map)(_ + _) onComplete {
-      _.value.get match {
-        case Left(exception) => actor ! MRFailed(exception) // What is MRResult?
-        case Right(result) => actor ! MRResult(result) // What is MRResult?
-      }
-    }
+    val futures = (1 to 100) map (x ⇒ Future { expensiveCalc(x) })
+    val sum = Future.fold(futures)(_ + _)(0)
   }
 }
