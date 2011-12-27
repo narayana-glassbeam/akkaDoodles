@@ -14,8 +14,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest"        %% "scalatest"  % "latest.integration" % "test"    withSources(),
-  "org.scala-tools.time" %% "time"       % "latest.integration" % "compile",
-  "com.typesafe.akka"    %  "akka-actor" % "latest.milestone"   % "compile" withSources(),
-  "org.scala-tools"      %% "scala-stm"  % "0.5-SNAPSHOT"       % "compile" withSources()
+  "org.scalatest"             %% "scalatest"  % "latest.integration" % "test"    withSources(),
+  "com.typesafe.akka"         %  "akka-actor" % "latest.milestone"   % "compile" withSources(),
+  "org.apache.httpcomponents" % "httpclient"  % "latest.integration" % "compile" withSources(),
+  "org.scala-tools"           %% "scala-stm"  % "0.5-SNAPSHOT"       % "compile" withSources()
 )

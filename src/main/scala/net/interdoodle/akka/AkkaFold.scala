@@ -16,7 +16,7 @@ object AkkaFold extends App {
 
   def expensiveCalc(x:Int) = { x * x }
 
-  def main(args:Array[String]) {
+  override def main(args:Array[String]) {
     val futures = (1 to 100) map (x ⇒ Future { expensiveCalc(x) })
     val sum = Future.fold(futures)(0)(_ + _)
   }

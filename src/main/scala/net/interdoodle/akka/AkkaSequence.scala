@@ -13,7 +13,7 @@ object AkkaSequence extends App {
   implicit val defaultDispatcher = system.dispatcher
 
 
-  def main(args:Array[String]) {
+  override def main(args:Array[String]) {
     val stringFutures = for (i <- 1 to 10) yield Future { i.toString }
     val futureStrings = Future sequence stringFutures
   }

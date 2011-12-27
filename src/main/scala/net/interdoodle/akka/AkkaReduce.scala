@@ -9,7 +9,7 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
  * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
-object AkkaReduce extends App with Actor {
+object AkkaReduce extends App {
   val system = ActorSystem("MySystem")
   implicit val defaultDispatcher = system.dispatcher
 
@@ -17,7 +17,7 @@ object AkkaReduce extends App with Actor {
   def expensiveCalc(x:Int) = { x * x }
   
 
-  def main(args:Array[String]) {
+  override def main(args:Array[String]) {
     val map = (1 to 100) map (x => Future { expensiveCalc(x) })
     Future.reduce(map)(_ + _) onComplete {
       _ match {
