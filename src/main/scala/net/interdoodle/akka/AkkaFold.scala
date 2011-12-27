@@ -18,6 +18,6 @@ object AkkaFold extends App {
 
   def main(args:Array[String]) {
     val futures = (1 to 100) map (x ⇒ Future { expensiveCalc(x) })
-    val sum = Future.fold(futures)(_ + _)(0)
+    val sum = Future.fold(futures)(0)(_ + _)
   }
 }
