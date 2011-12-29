@@ -1,4 +1,4 @@
-package com.micronautics.akka.actor
+package com.micronautics.akka.actor.actorRef
 
 import akka.actor.Actor
 
@@ -8,7 +8,7 @@ import akka.actor.Actor
   * Forwards the message and passes the original sender actor as the sender.
   * Works with '!' and '?'/'ask'. */
 object forward extends Actor {
-  this.forward(that)
+  self.forward(that)
   
   def receive = {
     case _ =>

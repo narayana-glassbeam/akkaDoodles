@@ -1,4 +1,4 @@
-package com.micronautics.akka.actorRef
+package com.micronautics.akka.actor.actorRef
 
 import akka.actor.Actor
 
