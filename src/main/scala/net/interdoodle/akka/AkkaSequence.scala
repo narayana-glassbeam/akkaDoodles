@@ -1,7 +1,7 @@
 package net.interdoodle.akka
 
 import akka.actor.ActorSystem
-import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
+import akka.dispatch.Future
 
 
 /** Traversable[Future[T]] => Future[Traversable[T]]
@@ -9,12 +9,13 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaSequence extends App {
-  val system = ActorSystem("MySystem")
-  implicit val defaultDispatcher = system.dispatcher
-
-
-  override def main(args:Array[String]) {
-    val stringFutures = for (i <- 1 to 10) yield Future { i.toString }
-    val futureStrings = Future sequence stringFutures
+  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+  val stringFutures = for (i <- 1 to 10) yield Future { i.toString }
+  Future sequence stringFutures onComplete { f => 
+    f match {
+      case Right(result) => println("Result: " + result)
+      case Left(exception) => println("Exception: " + exception)
+    }
+    System.exit(0)
   }
 }
