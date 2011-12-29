@@ -12,6 +12,7 @@ import akka.dispatch.Future
 object AkkaReduce extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val map = (1 to 100) map (x => Future { expensiveCalc(x) })
+  
   Future.reduce(map)(_ + _) onComplete { f => 
     f match {
       case Right(result) => println("Result: " + result)

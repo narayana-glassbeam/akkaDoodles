@@ -12,6 +12,7 @@ import akka.dispatch.Future
 object AkkaFold extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val futures = (1 to 10) map (x => Future { expensiveCalc(x) })
+  
   Future.fold(futures)(0)(_ + _) onComplete { f => 
     f match {
       case Right(result) => println("Result: " + result)

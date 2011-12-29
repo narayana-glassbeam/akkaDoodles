@@ -11,6 +11,7 @@ import akka.dispatch.Future
 object AkkaSequence extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val stringFutures = for (i <- 1 to 10) yield Future { i.toString }
+  
   Future sequence stringFutures onComplete { f => 
     f match {
       case Right(result) => println("Result: " + result)
