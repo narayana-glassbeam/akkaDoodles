@@ -12,13 +12,12 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
 object AkkaFold extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val futures = (1 to 10) map (x => Future { expensiveCalc(x) })
-  Future.fold(futures)(0)(_ + _) onComplete {
-    f =>
-      if (f.isRight)
-         println("Result: " + f.right.get)
-      else
-         println("Exception: " + f.left.get)
-      System.exit(0)
+  Future.fold(futures)(0)(_ + _) onComplete { f =>
+	if (f.isRight)
+	  println("Result: " + f.right.get)
+    else
+	  println("Exception: " + f.left.get)
+    System.exit(0)
   }
 
 
