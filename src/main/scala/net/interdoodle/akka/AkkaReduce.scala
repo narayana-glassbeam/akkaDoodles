@@ -1,6 +1,6 @@
 package net.interdoodle.akka
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
