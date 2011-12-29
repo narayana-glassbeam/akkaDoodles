@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
-/** '''Future.reduce()''' Non-blocking reduce, executed on the Thread that completes the last Future.
-  * Taken from Viktor Klang's "Future of Akka" presentation.
+/** '''Future.reduce()''' Non-blocking reduce, executed on the [[java.lang.Thread]] that completes the last [[akka.dispatch.Future]].
+  * This example is based on the code fragment shown in Viktor Klang's '''Future of Akka''' presentation.
   * @see http://days2011.scala-lang.org/node/138/283 */
 object AkkaReduce extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
