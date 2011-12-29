@@ -1,4 +1,3 @@
 package com.micronautics.akka.actor
 
-/** @see package com.micronautics.akka.actor.actorRef */
-}
+/** @see com.micronautics.akka.actor.actor.actorRef */
