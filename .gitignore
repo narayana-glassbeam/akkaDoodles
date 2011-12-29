@@ -1,4 +1,5 @@
 .classpath
+.cache
 .idea/
 .idea_modules/
 .project
