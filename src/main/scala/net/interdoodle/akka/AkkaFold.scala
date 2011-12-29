@@ -10,14 +10,17 @@ import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaFold extends App {
-  val system = ActorSystem("MySystem")
-  implicit val defaultDispatcher = system.dispatcher
+  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+  val futures = (1 to 10) map (x => Future { expensiveCalc(x) })
+  Future.fold(futures)(0)(_ + _) onComplete {
+    f =>
+      if (f.isRight)
+         println("Result: " + f.right.get)
+      else
+         println("Exception: " + f.left.get)
+      System.exit(0)
+  }
 
 
   def expensiveCalc(x:Int) = { x * x }
-
-  override def main(args:Array[String]) {
-    val futures = (1 to 100) map (x ⇒ Future { expensiveCalc(x) })
-    val sum = Future.fold(futures)(0)(_ + _)
-  }
 }

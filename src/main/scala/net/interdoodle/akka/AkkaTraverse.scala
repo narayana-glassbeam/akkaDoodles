@@ -32,6 +32,6 @@ object AkkaTraverse extends App {
       "http://www.playframework.org/",
       "http://nbronson.github.com/scala-stm/"
     )
-    val futureListOfPages = Future.traverse(urls)(url ⇒ Future { httpGet(url) })
+    val futureListOfPages = Future.traverse(urls)(url => Future { httpGet(url) })
   }
 }
