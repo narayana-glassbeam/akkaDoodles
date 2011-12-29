@@ -1,29 +1,25 @@
 package net.interdoodle.akka
 
 import akka.actor.{Actor, ActorSystem, Props}
-import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
+import akka.dispatch.Future
 
 
 /** Non-blocking reduce
- * Executed on the Thread that completes the last Future
+ * reduce is executed on the Thread that completes the last Future
  * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaReduce extends App {
-  val system = ActorSystem("MySystem")
-  implicit val defaultDispatcher = system.dispatcher
+  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+  val map = (1 to 100) map (x => Future { expensiveCalc(x) })
+  Future.reduce(map)(_ + _) onComplete { f => 
+    f match {
+      case Right(result) => println("Result: " + result)
+      case Left(exception) => println("Exception: " + exception)
+    }
+    System.exit(0)
+  }
 
 
   def expensiveCalc(x:Int) = { x * x }
-  
-
-  override def main(args:Array[String]) {
-    val map = (1 to 100) map (x => Future { expensiveCalc(x) })
-    Future.reduce(map)(_ + _) onComplete {
-      _ match {
-        case Left(exception) => println(exception)
-        case Right(result) => println(result)
-      }
-    }
-  }
 }
