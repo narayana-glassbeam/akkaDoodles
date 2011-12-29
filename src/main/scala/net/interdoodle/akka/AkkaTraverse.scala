@@ -1,7 +1,7 @@
 package net.interdoodle.akka
 
 import akka.actor.ActorSystem
-import akka.dispatch.{Dispatcher, MessageDispatcher, Future}
+import akka.dispatch.Future
 import org.apache.http.client._
 import org.apache.http.client.methods._
 import org.apache.http.impl.client._
@@ -13,25 +13,26 @@ import org.apache.http.impl.client._
  * See http://days2011.scala-lang.org/node/138/283 */
 
 object AkkaTraverse extends App {
-  val system = ActorSystem("MySystem")
-  implicit val defaultDispatcher = system.dispatcher
+  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val httpclient = new DefaultHttpClient
+  val urls = List (
+    "http://akka.io/",
+    "http://www.playframework.org/",
+    "http://nbronson.github.com/scala-stm/"
+  )
 
+  Future.traverse(urls)(url => Future { httpGet(url) }) onComplete { f => 
+    f match {
+      case Right(result) => println("Result: " + result)
+      case Left(exception) => println("Exception: " + exception)
+    }
+    System.exit(0)
+  }
 
-  def expensiveCalc(x:Int) = { x * x }
 
   def httpGet(urlStr:String) = {
     val httpget = new HttpGet(urlStr)
     val brh = new BasicResponseHandler
     httpclient.execute (httpget, brh)
-  }
-  
-  override def main(args:Array[String]) {
-    val urls = List (
-      "http://akka.io/",
-      "http://www.playframework.org/",
-      "http://nbronson.github.com/scala-stm/"
-    )
-    val futureListOfPages = Future.traverse(urls)(url => Future { httpGet(url) })
   }
 }
