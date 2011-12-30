@@ -12,7 +12,7 @@ import akka.dispatch.Future
   * 
   * {{{def map [A] (f: (T) => A): Future[A]}}}
   * 
-  * This example uses map to return a list URLs of web pages that contain the string {{{Simpler Concurrency}}}.
+  * This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
   */
 object Map extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
