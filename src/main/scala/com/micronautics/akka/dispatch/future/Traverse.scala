@@ -7,7 +7,8 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
-/** '''Future.traverse()''' Transforms a {{{Traversable[X] ⇒ Future[Traversable[Y]]}}}
+/** '''Future.traverse()''' {{{def traverse [A, B, M[_] <: Traversable[_]] (in: M[A])(fn: (A) => Future[B])(implicit cbf:CanBuildFrom[M[A], B, M[B]], dispatcher:MessageDispatcher):Future[M[B]]}}}
+ * Transforms a {{{Traversable[X] ⇒ Future[Traversable[Y]]}}}
  * Use as a parallel map that preserves order.
  * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */

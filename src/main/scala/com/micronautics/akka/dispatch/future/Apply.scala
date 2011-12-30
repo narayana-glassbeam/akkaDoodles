@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
-/** '''Future.apply()'''
+/** '''Future.apply()''' {{{def apply (): T @util.continuations.package.cps[akka.dispatch.Future[Any]]}}}
   * Non-blocking function call, executed on another thread. */
 object Apply extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
