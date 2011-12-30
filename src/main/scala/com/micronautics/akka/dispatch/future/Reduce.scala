@@ -7,13 +7,13 @@ import akka.dispatch.Future
 /** '''Future.reduce()''' Non-blocking reduce, executed on the [[java.lang.Thread]] that completes the last [[akka.dispatch.Future]].
   * This example is based on the code fragment shown in Viktor Klang's '''Future of Akka''' presentation.
   * @see http://days2011.scala-lang.org/node/138/283 */
-object AkkaReduce extends App {
+object Reduce extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val map = (1 to 100) map (x => Future { expensiveCalc(x) })
   
   Future.reduce(map)(_ + _) onComplete { f => 
     f match {
-      case Right(result) => println("Result: " + result)
+      case Right(result)   => println("Result: " + result)
       case Left(exception) => println("Exception: " + exception)
     }
     System.exit(0)

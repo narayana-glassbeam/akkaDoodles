@@ -7,7 +7,7 @@ import akka.actor.Actor
   * {{{def forward (message: Any)(implicit context: ActorContext): Unit}}}
   * Forwards the message and passes the original sender actor as the sender.
   * Works with '!' and '?'/'ask'. */
-object forward extends Actor {
+object Forward extends Actor {
   self.forward(that)
   
   def receive = {

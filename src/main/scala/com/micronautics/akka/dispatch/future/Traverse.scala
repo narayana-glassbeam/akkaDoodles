@@ -11,7 +11,7 @@ import akka.dispatch.Future
  * Use as a parallel map that preserves order.
  * Taken from Viktor Klang's "Future of Akka" presentation
  * See http://days2011.scala-lang.org/node/138/283 */
-object AkkaTraverse extends App {
+object Traverse extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val httpclient = new DefaultHttpClient
   val urls = List (
@@ -22,7 +22,7 @@ object AkkaTraverse extends App {
 
   Future.traverse(urls)(url => Future { httpGet(url).length() }) onComplete { f => 
     f match {
-      case Right(result) => println("Web page lengths: " + result)
+      case Right(result)   => println("Web page lengths: " + result)
       case Left(exception) => println("Exception: " + exception)
     }
     System.exit(0)
