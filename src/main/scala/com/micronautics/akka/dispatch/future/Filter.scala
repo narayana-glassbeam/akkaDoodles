@@ -12,8 +12,6 @@ import scala.MatchError
   * 
   * There is no way for a {{{Future}}} to represent the lack of results, so {{{Future}}}s that fail a filter contain a {{{MatchError}}} exception (on the Left).
   * 
-  * {{{scala.MatchError}}} cannot be imported, so this code tests filter match failure using Java reflection.
-  * 
   * '''Future.filter()''' {{{def filter (pred: (T) => Boolean): Future[T]}}}
   */
 object Filter extends App {
@@ -28,13 +26,11 @@ object Filter extends App {
       pageContents.indexOf("Simpler Concurrency")>=0 // invoked after future completes
     ) onComplete {f => // runs after the filter is evaluated
 	  f match {
-	    case Right(result)   => println("Result: " + url)
+	    case Right(result) => println("Result: " + url)
+	    case Left(_:MatchError) => // benign, ignore
 	    case Left(exception) => // if the filter does not match, the exception will contain a benign MatchError
-	      val exceptionName = exception.getClass().getName()
-	      if (exceptionName!="scala.MatchError") {
-  	        val msg = exception.getMessage()
-	        println("Exception: " + exceptionName + " " + msg.substring(msg.lastIndexOf("(")) + " for " + url)
-	      }
+  	      val msg = exception.getMessage()
+	      println("Exception: " + exception.getClass().getName() + " " + msg.substring(msg.lastIndexOf("(")) + " for " + url)
 	  }
     } 
   )
