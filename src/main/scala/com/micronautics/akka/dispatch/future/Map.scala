@@ -1,10 +1,10 @@
 package com.micronautics.akka.dispatch.future
 
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.{BasicResponseHandler, DefaultHttpClient}
+import org.apache.http.impl.client.{DefaultHttpClient, BasicResponseHandler}
 import akka.actor.ActorSystem
 import akka.dispatch.Future
-import scala.MatchError
+
 
 /** This example uses map to return a list URLs of web pages that contain the string {{{Simpler Concurrency}}}.
   * Map creates a new Future by applying a function to a successful Future result. If this Future is completed with an exception then the new Future will also contain this exception.
@@ -23,7 +23,7 @@ object Map extends App {
   urls map { url => 
     Future {
       httpGet(url)
-    } map {
+    } map { // implicit onComplete handler; Future value is provided to body
       case pageContents if pageContents.indexOf("Simpler Concurrency") >= 0 => println("Result: " + url)
       case _ => // ignore pages that do not contain the string "Simpler Concurrency"
     } recover {
