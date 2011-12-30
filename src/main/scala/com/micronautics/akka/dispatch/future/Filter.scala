@@ -17,24 +17,29 @@ import scala.MatchError
 object Filter extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val httpclient = new DefaultHttpClient
-  List (
+  val urls = List (
     "http://akka.io/",
     "http://www.playframework.org/",
     "http://nbronson.github.com/scala-stm/"
-  ) map (url => 
-    Future{httpGet(url)}.filter(pageContents => 
+  ) 
+  
+  // print URLs of pages containing the string "Simpler Concurrency"
+  urls map ( url => 
+    Future{
+      httpGet(url)}
+    filter ( pageContents => 
       pageContents.indexOf("Simpler Concurrency")>=0 // invoked after future completes
-    ) onComplete {f => // runs after the filter is evaluated
+    ) onComplete { f => // runs after the filter is evaluated
 	  f match {
 	    case Right(result) => println("Result: " + url)
 	    case Left(_:MatchError) => // if the filter does not match, the exception will contain a benign MatchError
 	    case Left(exception) => 
   	      val msg = exception.getMessage()
-	      println("Exception: " + exception.getClass().getName() + " " + msg.substring(msg.lastIndexOf("(")) + " for " + url)
+	      println(exception.getClass().getName() + " " + msg.substring(msg.lastIndexOf("(")) + " for " + url)
 	  }
-    } 
+    }
   )
-
+  
   /** Fetches contents of web page pointed to by urlStr */
   def httpGet(urlStr:String):String = {
     val httpget = new HttpGet(urlStr)
