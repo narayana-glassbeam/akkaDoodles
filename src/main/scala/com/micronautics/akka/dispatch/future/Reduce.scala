@@ -22,6 +22,6 @@ object Reduce extends App {
     System.exit(0)
   }
 
-  /** Pretend that method consumes a lot of computational resource */
+  /** Pretend this method consumes a lot of computational resource */
   def expensiveCalc(x:Int) = { x * x }
 }
