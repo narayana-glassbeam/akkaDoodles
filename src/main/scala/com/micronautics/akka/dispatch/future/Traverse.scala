@@ -7,11 +7,13 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
-/** '''Future.traverse()''' {{{def traverse [A, B, M[_] <: Traversable[_]] (in: M[A])(fn: (A) => Future[B])(implicit cbf:CanBuildFrom[M[A], B, M[B]], dispatcher:MessageDispatcher):Future[M[B]]}}}
- * Transforms a {{{Traversable[X] ⇒ Future[Traversable[Y]]}}}
+/** '''Future.traverse()''' Transforms a {{{Traversable[X] => Future[Traversable[Y]]}}}
  * Use as a parallel map that preserves order.
+ * 
+ * {{{def traverse [A, B, M[_] <: Traversable[_]] (in: M[A])(fn: (A) => Future[B])(implicit cbf:CanBuildFrom[M[A], B, M[B]], dispatcher:MessageDispatcher):Future[M[B]]}}}
+ * 
  * Taken from Viktor Klang's "Future of Akka" presentation
- * See http://days2011.scala-lang.org/node/138/283 */
+ * @see http://days2011.scala-lang.org/node/138/283 */
 object Traverse extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val httpclient = new DefaultHttpClient

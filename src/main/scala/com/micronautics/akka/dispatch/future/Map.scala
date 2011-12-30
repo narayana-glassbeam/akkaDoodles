@@ -6,10 +6,13 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 
 
-/** This example uses map to return a list URLs of web pages that contain the string {{{Simpler Concurrency}}}.
-  * Map creates a new Future by applying a function to a successful Future result. If this Future is completed with an exception then the new Future will also contain this exception.
+/** 
+  * '''Future.map()''' Map creates a new Future by applying a function to a successful Future result. If this Future is completed with an exception then the new Future will also contain this exception.
   * Map produces simpler code than using Future.filter.
-  * '''Future.filter()''' {{{def map [A] (f: (T) => A): Future[A]}}}
+  * 
+  * {{{def map [A] (f: (T) => A): Future[A]}}}
+  * 
+  * This example uses map to return a list URLs of web pages that contain the string {{{Simpler Concurrency}}}.
   */
 object Map extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
