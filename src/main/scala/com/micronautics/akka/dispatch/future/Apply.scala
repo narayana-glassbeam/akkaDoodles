@@ -8,7 +8,7 @@ import akka.dispatch.Future
   * Non-blocking function call, executed on another thread. */
 object Apply extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
-  Future.apply { 2 + 3 } onComplete { f => 
+  Future { 2 + 3 } onComplete { f => 
     f match {
       case Right(result)   => println("Result: " + result)
       case Left(exception) => println("Exception: " + exception)
