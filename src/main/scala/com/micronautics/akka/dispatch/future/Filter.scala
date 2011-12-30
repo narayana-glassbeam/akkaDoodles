@@ -27,8 +27,8 @@ object Filter extends App {
     ) onComplete {f => // runs after the filter is evaluated
 	  f match {
 	    case Right(result) => println("Result: " + url)
-	    case Left(_:MatchError) => // benign, ignore
-	    case Left(exception) => // if the filter does not match, the exception will contain a benign MatchError
+	    case Left(_:MatchError) => // if the filter does not match, the exception will contain a benign MatchError
+	    case Left(exception) => 
   	      val msg = exception.getMessage()
 	      println("Exception: " + exception.getClass().getName() + " " + msg.substring(msg.lastIndexOf("(")) + " for " + url)
 	  }
