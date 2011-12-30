@@ -6,7 +6,12 @@ import akka.actor.ActorSystem
 import akka.dispatch.Future
 import scala.MatchError
 
-/** '''Future.filter()''' {{{def filter (pred: (T) => Boolean): Future[T]}}} */
+/** '''Future.filter()''' {{{def filter (pred: (T) => Boolean): Future[T]}}}
+  * There is no way for a {{{Future}}} to represent no results, so {{{Future}}}s that fail a filter will contain a {{{MatchError}}} exception.
+  * {{{scala.MatchError}}} cannot be imported so the test for filter match failure uses Java reflection.
+  * 
+  * This example uses future filters to return a list of Future[String] containing the URLs of web pages that contain the string {{{Simpler Concurrency}}}.
+  * Filters are applied after the future completes, so onComplete() is silently called. */
 object Filter extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
   val httpclient = new DefaultHttpClient
