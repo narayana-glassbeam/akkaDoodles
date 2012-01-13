@@ -7,7 +7,8 @@ import akka.dispatch.Future
 
 
 /** 
-  * '''Future.map()''' Map creates a new Future by applying a function to a successful Future result. If this Future is completed with an exception then the new Future will also contain this exception.
+  * '''Future.map()''' Map creates a new Future by applying a function to a successful Future result. 
+  * If this Future is completed with an exception then the new Future will also contain this exception.
   * Map produces simpler code than using Future.filter.
   * 
   * {{{def map [A] (f: (T) => A): Future[A]}}}
