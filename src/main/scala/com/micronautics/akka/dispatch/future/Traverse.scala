@@ -1,7 +1,8 @@
 package com.micronautics.akka.dispatch.future
 
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.{BasicResponseHandler, DefaultHttpClient}
+import java.net.URL
+import scalax.io._
+import scalax.io.JavaConverters._
 
 import akka.actor.ActorSystem
 import akka.dispatch.Future
@@ -16,7 +17,6 @@ import akka.dispatch.Future
  * @see http://days2011.scala-lang.org/node/138/283 */
 object Traverse extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
-  val httpclient = new DefaultHttpClient
   val urls = List (
     "http://akka.io/",
     "http://www.playframework.org/",
@@ -33,8 +33,6 @@ object Traverse extends App {
 
   /** Fetches contents of web page pointed to by urlStr */
   def httpGet(urlStr:String) = {
-    val httpget = new HttpGet(urlStr)
-    val brh = new BasicResponseHandler
-    httpclient.execute (httpget, brh)
+    new URL(urlStr).asInput.slurpString(Codec.UTF8)
   }
 }
