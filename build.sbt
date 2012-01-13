@@ -1,5 +1,5 @@
 // see https://github.com/sbt/sbt-assembly
-import AssemblyKeys._ // put this at the top of the file
+//import AssemblyKeys._ // put this at the top of the file
 
 name := "AkkaDoodles"
 
@@ -24,4 +24,4 @@ libraryDependencies ++= Seq(
   "org.scala-tools"               %% "scala-stm"     % "0.5-SNAPSHOT"       % "compile" withSources()
 )
 
-seq(assemblySettings: _*)
+//seq(assemblySettings: _*)
