@@ -1,3 +1,6 @@
+// see https://github.com/sbt/sbt-assembly
+import AssemblyKeys._ // put this at the top of the file
+
 name := "AkkaDoodles"
 
 version := "0.1"
@@ -20,3 +23,5 @@ libraryDependencies ++= Seq(
   "com.github.scala-incubator.io" %% "scala-io-file" % "latest.integration" % "compile" withSources(),
   "org.scala-tools"               %% "scala-stm"     % "0.5-SNAPSHOT"       % "compile" withSources()
 )
+
+seq(assemblySettings: _*)
