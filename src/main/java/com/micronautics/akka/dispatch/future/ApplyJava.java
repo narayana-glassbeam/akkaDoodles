@@ -13,7 +13,8 @@ import akka.japi.Function;
 import akka.util.Duration;
 
 
-/** Invoke Future as a non-blocking function call, executed on another thread. */
+/** Invoke Future as a non-blocking function call, executed on another thread.
+ * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
 class ApplyJava {
     private ActorSystem system = ActorSystem.create();
     private MessageDispatcher dispatcher = system.dispatcher();
