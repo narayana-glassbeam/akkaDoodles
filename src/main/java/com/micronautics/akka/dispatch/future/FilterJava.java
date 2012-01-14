@@ -1,24 +1,21 @@
 package com.micronautics.akka.dispatch.future;
 
-import static akka.dispatch.Futures.future;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import java.util.Arrays;  
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import scala.Either;
-import scala.Option;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import akka.actor.ActorSystem;
-import akka.dispatch.Await;
-import akka.dispatch.Future;
 import akka.dispatch.MessageDispatcher;
-import akka.japi.Function;
 import akka.util.Duration;
 
 
 public class FilterJava {
     private ActorSystem system = ActorSystem.create();
     private MessageDispatcher dispatcher = system.dispatcher();
+    private DefaultHttpClient httpclient = new DefaultHttpClient();
     private Duration timeout = Duration.create(1, SECONDS);
     private List<String> urls = new LinkedList<String> (Arrays.asList(new String[] {
         "http://akka.io/",
@@ -46,6 +43,17 @@ public class FilterJava {
     }
 
     private static void nonBlocking() {
+    }
+    
+    String httpGet(String urlStr) {
+        HttpGet httpget = new HttpGet(urlStr);
+        BasicResponseHandler brh = new BasicResponseHandler();
+        try {
+            return httpclient.execute(httpget, brh);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static void main(String[] args) {
