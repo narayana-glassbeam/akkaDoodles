@@ -42,13 +42,13 @@ class ReduceJava {
     
     
     void blocking() {
-        Future<Integer> resultFuture = future(new Callable<Integer>() {
-          public Integer call() {
-            return 2 + 3;
-          }
-        }, dispatcher);
+        Future<String> resultFuture = Futures.reduce(futures, new Function2<String, String, String>() {
+            public String apply(String url, String contents) {
+                return contents.indexOf("Simpler Concurrency")>0 ? url : null;
+              }
+            }, dispatcher);
         // Await.result() blocks until the Future completes
-        Integer result = (Integer) Await.result(resultFuture, timeout);
+        String result = (String) Await.result(resultFuture, timeout);
         System.out.println("Result: " + result);
     }
 
