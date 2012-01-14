@@ -71,7 +71,7 @@ class MapJava {
         });*/
     }
     
-    String httpGet(String urlStr) {
+    private String httpGet(String urlStr) {
         HttpGet httpget = new HttpGet(urlStr);
         BasicResponseHandler brh = new BasicResponseHandler();
         try {
