@@ -47,7 +47,7 @@ class SequenceJava {
                 for (String page : pages)
                     if (page.indexOf("Simpler Concurrency")>0)
                         results.add(page);
-                return results;
+                return results; // how to tell map() it should release its thread now?
             }
         });
         // Await.result() blocks until the Futures all complete
