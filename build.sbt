@@ -1,6 +1,8 @@
 // see https://github.com/sbt/sbt-assembly
 import AssemblyKeys._ // put this at the top of the file
 
+organization := "Micronautics Research"
+
 name := "AkkaDoodles"
 
 version := "0.1"
