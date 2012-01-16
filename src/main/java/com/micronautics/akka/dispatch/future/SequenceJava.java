@@ -11,7 +11,10 @@ import akka.dispatch.Future;
 import akka.dispatch.Futures;
 import akka.dispatch.MessageDispatcher;
 import akka.japi.Function;
+import akka.japi.Procedure;
 import akka.util.Duration;
+import scala.runtime.BoxedUnit;
+import scala.Either;
 
 
 /** Future.sequence takes the Iterable<Future<String>> and turns it into a Future<Iterable<String>>.
@@ -35,9 +38,25 @@ class SequenceJava {
         futures.add(Futures.successful(httpGet("http://nbronson.github.com/scala-stm/"), dispatcher));
     }
 
-    
     void blocking() {
         Future<Iterable<String>> futureListOfPages = Futures.sequence(futures, dispatcher);
+        futureListOfPages.onComplete(new Procedure<Either<Throwable,Iterable<String>>,BoxedUnit>() {
+            /** Invoked once each future has received a value.
+             *  The URL that pointed to the page was discarded by Futures.sequence and is not available now */
+            public Either<Throwable,Iterable<String>> apply(Either<Throwable,Iterable<String>> either) {
+                ArrayList<String> results = new ArrayList<String>();
+                Either<Throwable,Iterable<String>> result = new Either<Throwable,Iterable<String>>();
+                if (either.isRight()) {
+	                for (String page : either.right().get())
+	                    if (page.indexOf("Simpler Concurrency")>0)
+	                        results.add(page);
+	                result.setRight = results;
+                } else {
+                	results.setLeft = new Exception("blah");
+                }
+                return result;
+            }
+        });
         // import akka.japi.Function, not scala.Function!
         Future<ArrayList<String>> resultFuture = futureListOfPages.map(new Function<Iterable<String>, ArrayList<String>>() {
             /** Invoked once each future has received a value.
