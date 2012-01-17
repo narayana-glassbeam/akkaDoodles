@@ -35,8 +35,19 @@ class FoldJava {
     /** Maximum length of time to wait for futures to complete */
     private Duration timeout = Duration.create(10, SECONDS);
 
-    /** Collection of futures, which Futures.sequence will turn into a Future cf a collection */
+    /** Collection of futures, which Futures.sequence will turn into a Future of a collection */
     private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
+
+    protected ArrayList<String> result = new ArrayList<String>();
+
+    private Function2<ArrayList<String>, String, ArrayList<String>> function2 = new Function2<ArrayList<String>, String, ArrayList<String>>() {
+        public ArrayList<String> apply(ArrayList<String> result, String contents) {
+            if (contents.indexOf("Simpler Concurrency")>0)
+                result.add(contents);
+            return result;
+        }
+    };
+    
 
     {   // HttpGetter implements Callable
         futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
@@ -44,17 +55,8 @@ class FoldJava {
         futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
     }
 
-    protected ArrayList<String> result = new ArrayList<String>();
-
-
+    
     void blocking() {
-        Function2<String, String, ArrayList<String>> function2 = new Function2<String, String, ArrayList<String>>() {
-            public ArrayList<String> apply(String url, String contents) {
-                if (contents.indexOf("Simpler Concurrency")>0)
-                    result.add(url);
-                return result;
-            }
-        };
         Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, function2, context);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
