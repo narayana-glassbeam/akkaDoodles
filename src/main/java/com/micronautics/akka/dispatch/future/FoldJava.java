@@ -4,23 +4,19 @@ import akka.dispatch.Futures;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import scala.Either;
 import scala.Option;
 import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
-import akka.dispatch.MessageDispatcher;
+import akka.japi.Function;
 import akka.japi.Function2;
 import akka.util.Duration;
 
 import com.micronautics.concurrent.DaemonExecutors;
 import com.micronautics.util.HttpGetter;
 
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.List;
 
 /** Invoke Future as a non-blocking function call, executed on another thread.
  *  This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
@@ -47,17 +43,22 @@ class FoldJava {
         futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
         futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
     }
-    
-    
+
+    protected ArrayList<String> result = new ArrayList<String>();
+
+
     void blocking() {
-        Future<String> resultFuture = Futures.fold("", futures, new Function2<String, String, String>() {
-            public String apply(String url, String contents) {
-                return contents.indexOf("Simpler Concurrency")>0 ? url : null;
-              }
-            }, context);
+        Function2<String, String, ArrayList<String>> function2 = new Function2<String, String, ArrayList<String>>() {
+            public ArrayList<String> apply(String url, String contents) {
+                if (contents.indexOf("Simpler Concurrency")>0)
+                    result.add(url);
+                return result;
+            }
+        };
+        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, function2, context);
         // Await.result() blocks until the Future completes
-        String result = (String) Await.result(resultFuture, timeout);
-        System.out.println("Result: " + result);
+        ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
+        System.out.println(result.size() + " web pages contained 'Simpler Concurrency'");
     }
 
     void nonBlocking() {
@@ -66,7 +67,7 @@ class FoldJava {
                 return contents.indexOf("Simpler Concurrency")>0 ? url : null;
               }
             }, context);
-        /*resultFuture.onComplete(new Function<Future<String>>() { 
+        /*resultFuture.onComplete(new Function<Future<String>>() {
             public void apply(Future<String> future) {
                 // This block is executed asynchronously
                 Option<Either<Throwable,String>> result = future.value();
@@ -74,7 +75,7 @@ class FoldJava {
             }
         });*/
     }
-    
+
     public static void main(String[] args) {
         FoldJava example = new FoldJava();
         example.blocking();
