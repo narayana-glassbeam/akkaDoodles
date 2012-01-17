@@ -1,3 +1,3 @@
 package com.micronautics.akka.dispatch.future
 
-/** Examples for akka.dispatch.Future */
+/** Scala examples for akka.dispatch.Future */
