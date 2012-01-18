@@ -37,12 +37,6 @@ public class SequenceJava {
     /** Collection of futures, which Futures.sequence will turn into a Future cf a collection */
     private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
 
-    {   // HttpGetter implements Callable
-        futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
-        futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
-        futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
-    }
-    
     // import akka.japi.Function, not scala.Function!
     private Function<Iterable<String>, ArrayList<String>> createResult = new Function<Iterable<String>, ArrayList<String>>() {
         /** Invoked once each future has received a value.
@@ -55,7 +49,14 @@ public class SequenceJava {
             return results; // how to tell map() it should release its thread now?
         }
     };
+    
 
+    {   // HttpGetter implements Callable
+        futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
+        futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
+        futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
+    }
+    
 
     void blocking() {
         Future<Iterable<String>> futureListOfPages = Futures.sequence(futures, context);

@@ -1,16 +1,13 @@
 package com.micronautics.akka.dispatch.future;
 
-import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
 import akka.dispatch.Futures;
-import akka.japi.Function2;
 import akka.japi.Procedure2;
-
-import com.micronautics.util.HttpGetter;
 
 /** Invoke Future as a non-blocking function call, executed on another thread.
  * This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
@@ -26,7 +23,7 @@ import com.micronautics.util.HttpGetter;
  * That means that public properties from cannot be retrieved from the Callable.
  * If this is important, HttpGetter.call() should be modified to return a result object, perhaps a HashMap, that wraps the url and the resulting content.
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
-class FoldNonBlocking {
+class ApplyNonBlocking {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -35,29 +32,13 @@ class FoldNonBlocking {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
-    /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
-     * These futures will run under a regular context. */
-    private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
-
-    /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> result = new ArrayList<String>();
-
-    /** Composable function for both versions */
-    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
-        public ArrayList<String> apply(ArrayList<String> result, String contents) {
-            if (contents.indexOf("Simpler Concurrency")>0)
-                result.add(contents);
-            return result;
-        }
-    };
-    
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
+    private Procedure2<Throwable,Integer> completionFunction = new Procedure2<Throwable,Integer>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
-        public void apply(Throwable exception, ArrayList<String> result) {
+        public void apply(Throwable exception, Integer result) {
             if (result != null) {
-                System.out.println("Nonblocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking apply result: " + result);
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -65,12 +46,11 @@ class FoldNonBlocking {
         }
     };
 
-
-    {   /* Build array of Futures that will run on regular threads. Remember that HttpGetter implements Callable */
-    	futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
-        futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
-        futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
-    }
+    private Callable<Integer> callable = new Callable<Integer>() {
+        public Integer call() {
+            return 2 + 3;
+        }
+    };
 
 
     /** Demonstrates how to invoke fold() asynchronously.
@@ -80,12 +60,11 @@ class FoldNonBlocking {
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
     void doit() {
-    	result.clear();
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
+        Future<Integer> resultFuture = Futures.future(callable, context);
         resultFuture.onComplete(completionFunction);
     }
 
     public static void main(String[] args) {
-        new FoldNonBlocking().doit();
+        new ApplyNonBlocking().doit();
     }
 }
