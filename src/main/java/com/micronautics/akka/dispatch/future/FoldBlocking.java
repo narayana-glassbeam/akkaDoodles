@@ -1,5 +1,6 @@
 package com.micronautics.akka.dispatch.future;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
@@ -36,7 +37,7 @@ class FoldBlocking {
         public void execute(Runnable r) { daemonExecutorService.execute(r); }
     };
 
-    /** Maximum length of time to wait for futures to complete */
+    /** Maximum length of time to block while waiting for futures to complete */
     private Duration timeout = Duration.create(10, SECONDS);
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
