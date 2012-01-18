@@ -3,14 +3,13 @@ package com.micronautics.akka.dispatch.future;
 import akka.dispatch.Futures;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import scala.Either;
-import scala.Option;
 import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
-import akka.japi.Function;
 import akka.japi.Function2;
+import akka.japi.Procedure2;
 import akka.util.Duration;
 
 import com.micronautics.concurrent.DaemonExecutors;
@@ -33,8 +32,16 @@ import java.util.ArrayList;
  * If this is important, HttpGetter.call() should be modified to return a result object, perhaps a HashMap, that wraps the url and the resulting content.
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
 class FoldJava {
-    /** executorService creates daemon threads, which shut down when the application exits. */
-    private final ExecutorService executorService = DaemonExecutors.newFixedThreadPool(10);
+    /** daemonExecutorService creates daemon threads, which shut down when the application exits. */
+    private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
+
+    /** executorService creates regular threads, which continue running when the application tries to exit. */
+    private final ExecutorService executorService       = Executors.newFixedThreadPool(10);
+
+    /** Akka uses the execution context to manage futures under its control */
+    private ExecutionContext daemonContext = new ExecutionContext() {
+        public void execute(Runnable r) { daemonExecutorService.execute(r); }
+    };
 
     /** Akka uses the execution context to manage futures under its control */
     private ExecutionContext context = new ExecutionContext() {
@@ -44,8 +51,13 @@ class FoldJava {
     /** Maximum length of time to wait for futures to complete */
     private Duration timeout = Duration.create(10, SECONDS);
 
-    /** Collection of futures, which Futures.sequence will turn into a Future of a collection */
-    private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
+    /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
+     * These futures will run under daemonContext. */
+    private ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
+
+    /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
+     * These futures will run under a regular context. */
+    private ArrayList<Future<String>> futures       = new ArrayList<Future<String>>();
 
     protected ArrayList<String> result = new ArrayList<String>();
 
@@ -57,29 +69,47 @@ class FoldJava {
         }
     };
 
-    private Function<Either<Throwable,ArrayList<String>>,ArrayList<String>> completionFunction = new Function<Either<Throwable,ArrayList<String>>,ArrayList<String>>() {
-        /** This method is executed asynchronously */
-        public void apply(Either<Throwable,ArrayList<String>,ArrayList<String>> either) {
-            System.out.println("Result: " + either);
+    private Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
+        /** This method is executed asynchronously, probably after the mainline has completed */
+        public void apply(Throwable exception, ArrayList<String> result) {
+            if (result != null) {
+                System.out.println("onComplete version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+            } else {
+                System.out.println("Exception: " + exception);
+            }
+            executorService.shutdown(); // terminates program
         }
-    }
+    };
 
 
     {   /* HttpGetter implements Callable */
-        futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
+    	daemonFutures.add(Futures.future(new HttpGetter("http://akka.io/"), daemonContext));
+        daemonFutures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), daemonContext));
+        daemonFutures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), daemonContext));
+    }
+
+    {   /* HttpGetter implements Callable */
+    	futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
         futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
         futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
     }
 
 
     void blocking() {
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
+    	result.clear();
+        Future<ArrayList<String>> resultFuture = Futures.fold(result, daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
-        System.out.println(result.size() + " web pages contained 'Simpler Concurrency'");
+        System.out.println("blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
     }
 
+    /** Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
+     * needs to be available after the main program has finished execution. If daemon threads were used, the program
+     * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
+     * terminating the program, or setting up another callback for some other purpose. The program could be terminated
+     * with a call to System.exit(0), or by suspending the thread. */
     void nonBlocking() {
+    	result.clear();
         Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
         resultFuture.onComplete(completionFunction);
     }
