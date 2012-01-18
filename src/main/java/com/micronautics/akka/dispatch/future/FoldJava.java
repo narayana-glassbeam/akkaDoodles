@@ -99,6 +99,7 @@ class FoldJava {
     }
 
 
+    /** Demonstrates how to invoke fold() and block until a result is available */
     void blocking() {
     	result.clear();
         Future<ArrayList<String>> resultFuture = Futures.fold(result, daemonFutures, applyFunction, daemonContext);
@@ -107,7 +108,8 @@ class FoldJava {
         System.out.println("blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
     }
 
-    /** Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
+    /** Demonstrates how to invoke fold() asynchronously.
+     * Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
      * needs to be available after the main program has finished execution. If daemon threads were used, the program
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
