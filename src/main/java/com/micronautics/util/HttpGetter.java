@@ -33,7 +33,7 @@ public class HttpGetter implements Callable<String> {
             String result = httpClient.execute(httpGet, brh);
             if (searchString==null || result.indexOf(searchString)>=0)
             	return result;
-            return null; // scala would throw new MatchError() but Java cannot?
+            return "";
         } catch (Exception e) {
             e.printStackTrace();
             return "";
