@@ -59,6 +59,7 @@ class FoldJava {
      * These futures will run under a regular context. */
     private ArrayList<Future<String>> futures       = new ArrayList<Future<String>>();
 
+    /** Accumulates result during fold(), also provides initial results, if desired. */
     protected ArrayList<String> result = new ArrayList<String>();
 
     /** Composable function for blocking version */
