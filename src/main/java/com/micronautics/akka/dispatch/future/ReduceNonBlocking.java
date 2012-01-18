@@ -61,7 +61,7 @@ class ReduceNonBlocking {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, ArrayList<String> result) {
             if (result != null) {
-                System.out.println("Nonblocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking reduce: " + result.size() + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -77,7 +77,7 @@ class ReduceNonBlocking {
     }
 
 
-    /** Demonstrates how to invoke fold() asynchronously.
+    /** Demonstrates how to invoke reduce() asynchronously.
      * Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
      * needs to be available after the main program has finished execution. If daemon threads were used, the program
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of

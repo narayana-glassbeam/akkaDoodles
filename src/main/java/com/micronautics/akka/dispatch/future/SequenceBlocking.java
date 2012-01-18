@@ -70,7 +70,7 @@ class SequenceBlocking {
         System.out.println("Blocking sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
     }
     
-    /** Demonstrates how to invoke fold() and block until a result is available */
+    /** Demonstrates how to invoke sequence() and block until a result is available */
     public static void main(String[] args) {
     	new SequenceBlocking().doit();
     }

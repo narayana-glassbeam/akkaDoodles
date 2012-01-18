@@ -67,7 +67,7 @@ class FoldBlocking {
         Future<ArrayList<String>> resultFuture = Futures.fold(initialValue, daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
-        System.out.println("Blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        System.out.println("Blocking fold: " + result.size() + " web pages contained 'Simpler Concurrency'.");
     }
     
     /** Demonstrates how to invoke fold() and block until a result is available */

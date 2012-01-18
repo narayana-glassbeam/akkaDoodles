@@ -57,7 +57,7 @@ class FoldNonBlocking {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, ArrayList<String> result) {
             if (result != null) {
-                System.out.println("Nonblocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking fold: " + result.size() + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }

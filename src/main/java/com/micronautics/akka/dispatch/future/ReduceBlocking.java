@@ -70,11 +70,11 @@ class ReduceBlocking {
         Future<ArrayList<String>> resultFuture = Futures.reduce(daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
-        System.out.println("Blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        System.out.println("Blocking reduce: " + result.size() + " web pages contained 'Simpler Concurrency'.");
         */
     }
     
-    /** Demonstrates how to invoke fold() and block until a result is available */
+    /** Demonstrates how to invoke reduce() and block until a result is available */
     public static void main(String[] args) {
     	new ReduceBlocking().doit();
     }

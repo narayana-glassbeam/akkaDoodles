@@ -72,7 +72,7 @@ class SequenceNonBlocking {
     }
 
 
-    /** Demonstrates how to invoke fold() asynchronously.
+    /** Demonstrates how to invoke sequence() asynchronously.
      * Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
      * needs to be available after the main program has finished execution. If daemon threads were used, the program
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
