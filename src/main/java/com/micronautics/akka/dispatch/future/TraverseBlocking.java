@@ -67,7 +67,11 @@ class TraverseBlocking {
         Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         LinkedList<String> result = (LinkedList<String>) Await.result(resultFuture, timeout);
-        System.out.println("Blocking traverse: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        int matchCount = 0;
+        for (String r : result)
+        	if (r.length()>0)
+        		matchCount++;
+        System.out.println("Blocking traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
     }
     
     /** Demonstrates how to invoke sequence() and block until a result is available */
