@@ -22,6 +22,15 @@ import java.util.ArrayList;
  *  This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
  *  Non-blocking fold is executed on the thread of the last Future to be completed.
  * If this Future is completed with an exception then the new Future will also contain this exception.
+ * 
+ * The call to Futures.future() forwards the HttpGetter Callables to Future.apply(), part of the Scala API. 
+ * They are then sent to the ExecutionContext to be run. 
+ * If the ExecutionContext is an Akka dispatcher then it does some additional preparation before queuing the futures for processing.
+ * Futures.fold() registers callback functions with each of the futures in order to collect all the results needed in order to produce the final result using applyFunction().
+ * 
+ * The Callable is not in scope of applyFunction2.apply(), unlike some other composable functions. 
+ * That means that public properties from cannot be retrieved from the Callable.
+ * If this is important, HttpGetter.call() should be modified to return a result object, perhaps a HashMap, that wraps the url and the resulting content.
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
 class FoldJava {
     /** executorService creates daemon threads, which shut down when the application exits. */
@@ -40,42 +49,39 @@ class FoldJava {
 
     protected ArrayList<String> result = new ArrayList<String>();
 
-    private Function2<ArrayList<String>, String, ArrayList<String>> function2 = new Function2<ArrayList<String>, String, ArrayList<String>>() {
+    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
                 result.add(contents);
             return result;
         }
     };
-    
 
-    {   // HttpGetter implements Callable
+    private Function<Either<Throwable,ArrayList<String>>,ArrayList<String>> completionFunction = new Function<Either<Throwable,ArrayList<String>>,ArrayList<String>>() {
+        /** This method is executed asynchronously */
+        public void apply(Either<Throwable,ArrayList<String>,> either) {
+            System.out.println("Result: " + either);
+        }
+    };
+
+
+    {   /* HttpGetter implements Callable */
         futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
         futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
         futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
     }
 
-    
+
     void blocking() {
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, function2, context);
+        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
         System.out.println(result.size() + " web pages contained 'Simpler Concurrency'");
     }
 
     void nonBlocking() {
-        Future<String> resultFuture = Futures.fold("", futures, new Function2<String, String, String>() {
-            public String apply(String url, String contents) {
-                return contents.indexOf("Simpler Concurrency")>0 ? url : null;
-              }
-            }, context);
-        /*resultFuture.onComplete(new Function<Future<String>>() {
-            public void apply(Future<String> future) {
-                // This block is executed asynchronously
-                Option<Either<Throwable,String>> result = future.value();
-                System.out.println("Result: " + result.right);
-            }
-        });*/
+        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
+        resultFuture.onComplete(completionFunction);
     }
 
     public static void main(String[] args) {
