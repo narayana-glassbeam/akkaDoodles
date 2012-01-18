@@ -45,7 +45,7 @@ class FoldBlocking {
     private ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> result = new ArrayList<String>();
+    protected ArrayList<String> initialValue = new ArrayList<String>();
 
     /** Composable function for both versions */
     private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
@@ -64,8 +64,7 @@ class FoldBlocking {
     }
 
     public void doit() {
-    	result.clear();
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, daemonFutures, applyFunction, daemonContext);
+        Future<ArrayList<String>> resultFuture = Futures.fold(initialValue, daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
         System.out.println("Blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");

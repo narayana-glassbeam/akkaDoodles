@@ -40,7 +40,7 @@ class FoldNonBlocking {
     private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> result = new ArrayList<String>();
+    protected ArrayList<String> initialValue = new ArrayList<String>();
 
     /** Composable function for both versions */
     private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
@@ -80,8 +80,7 @@ class FoldNonBlocking {
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
     void doit() {
-    	result.clear();
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
+        Future<ArrayList<String>> resultFuture = Futures.fold(initialValue, futures, applyFunction, context);
         resultFuture.onComplete(completionFunction);
     }
 
