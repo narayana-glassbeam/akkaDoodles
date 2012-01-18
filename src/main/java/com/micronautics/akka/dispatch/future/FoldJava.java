@@ -38,12 +38,12 @@ class FoldJava {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService       = Executors.newFixedThreadPool(10);
 
-    /** Akka uses the execution context to manage futures under its control */
+    /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates daemon threads. */
     private ExecutionContext daemonContext = new ExecutionContext() {
         public void execute(Runnable r) { daemonExecutorService.execute(r); }
     };
 
-    /** Akka uses the execution context to manage futures under its control */
+    /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
     private ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
