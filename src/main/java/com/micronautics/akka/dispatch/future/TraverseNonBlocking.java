@@ -1,5 +1,6 @@
 package com.micronautics.akka.dispatch.future;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,18 +36,14 @@ class TraverseNonBlocking {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
-    /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
-     * These futures will run under a regular context. */
-    private LinkedList<Future<String>> futures = new LinkedList<Future<String>>();
+    /** Collection of String, which Futures.traverse will turn into a Future of a collection.
+     * The futures will run under a regular context. */
+    private ArrayList<String> urls = new ArrayList<String>();
 
     /** Composable function for both versions */
-    private Function<Iterable<String>, LinkedList<String>> applyFunction = new Function<Iterable<String>, LinkedList<String>>() {
-        public LinkedList<String> apply(Iterable<String> contents) {
-        	LinkedList<String> result = new LinkedList<String>();
-        	for (String content : contents)
-        	    if (content.indexOf("Simpler Concurrency")>0) 
-        	    	result.add(content);
-        	return result;
+    private Function<String, Future<String>> applyFunction = new Function<String, Future<String>>() {
+        public Future<String> apply(final String url) {
+            return Futures.future(new HttpGetter(url, "Simpler Concurrency"), context);
         }
     };
     
@@ -56,7 +53,11 @@ class TraverseNonBlocking {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, LinkedList<String> result) {
             if (result != null) {
-                System.out.println("Nonblocking sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                int matchCount = 0;
+                for (String r : result)
+                	if (r.length()>0)
+                		matchCount++;
+                System.out.println("Nonblocking traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -65,10 +66,10 @@ class TraverseNonBlocking {
     };
 
 
-    {   /* Build array of Futures that will run on regular threads. Remember that HttpGetter implements Callable */
-    	futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
-        futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
-        futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
+    {   /* Build array of URL Strings. */
+    	urls.add("http://akka.io/");
+        urls.add("http://www.playframework.org/");
+        urls.add("http://nbronson.github.com/scala-stm/");
     }
 
 
@@ -79,7 +80,7 @@ class TraverseNonBlocking {
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
     void doit() {
-        Future<LinkedList<String>> resultFuture = Futures.sequence(futures, context).map(applyFunction);
+        Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, context);
         resultFuture.onComplete(completionFunction);
     }
 

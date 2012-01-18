@@ -42,8 +42,8 @@ class TraverseBlocking {
     /** Maximum length of time to block while waiting for futures to complete */
     private Duration timeout = Duration.create(10, SECONDS);
 
-    /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
-     * These futures will run under daemonContext. */
+    /** Collection of String, which Futures.traverse will turn into a Future of a collection.
+     * The futures will run under daemonContext. */
     private ArrayList<String> urls = new ArrayList<String>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
