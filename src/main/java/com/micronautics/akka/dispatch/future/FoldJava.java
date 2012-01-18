@@ -59,10 +59,10 @@ class FoldJava {
 
     private Function<Either<Throwable,ArrayList<String>>,ArrayList<String>> completionFunction = new Function<Either<Throwable,ArrayList<String>>,ArrayList<String>>() {
         /** This method is executed asynchronously */
-        public void apply(Either<Throwable,ArrayList<String>,> either) {
+        public void apply(Either<Throwable,ArrayList<String>,ArrayList<String>> either) {
             System.out.println("Result: " + either);
         }
-    };
+    }
 
 
     {   /* HttpGetter implements Callable */
