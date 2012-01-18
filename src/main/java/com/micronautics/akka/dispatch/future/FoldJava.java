@@ -1,21 +1,21 @@
 package com.micronautics.akka.dispatch.future;
 
-import akka.dispatch.Futures;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
+import akka.dispatch.Futures;
 import akka.japi.Function2;
 import akka.japi.Procedure2;
 import akka.util.Duration;
 
 import com.micronautics.concurrent.DaemonExecutors;
 import com.micronautics.util.HttpGetter;
-
-import java.util.ArrayList;
 
 /** Invoke Future as a non-blocking function call, executed on another thread.
  *  This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
