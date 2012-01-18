@@ -1,20 +1,15 @@
 package com.micronautics.akka.dispatch.future;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
 import akka.dispatch.Futures;
 import akka.japi.Function2;
 import akka.japi.Procedure2;
-import akka.util.Duration;
 
-import com.micronautics.concurrent.DaemonExecutors;
 import com.micronautics.util.HttpGetter;
 
 /** Invoke Future as a non-blocking function call, executed on another thread.
@@ -33,19 +28,16 @@ import com.micronautics.util.HttpGetter;
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
 class FoldNonBlocking {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
-    private final ExecutorService executorService       = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
     private ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
-    /** Maximum length of time to wait for futures to complete */
-    private Duration timeout = Duration.create(10, SECONDS);
-
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under a regular context. */
-    private ArrayList<Future<String>> futures       = new ArrayList<Future<String>>();
+    private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
     protected ArrayList<String> result = new ArrayList<String>();
