@@ -61,6 +61,7 @@ class FoldJava {
 
     protected ArrayList<String> result = new ArrayList<String>();
 
+    /** Composable function for blocking version */
     private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
@@ -69,8 +70,10 @@ class FoldJava {
         }
     };
 
+    /** onComplete handler for nonblocking version */
     private Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
-        /** This method is executed asynchronously, probably after the mainline has completed */
+        
+    	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, ArrayList<String> result) {
             if (result != null) {
                 System.out.println("onComplete version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
