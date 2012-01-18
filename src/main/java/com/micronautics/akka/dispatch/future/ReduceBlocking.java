@@ -14,7 +14,8 @@ import akka.util.Duration;
 import com.micronautics.concurrent.DaemonExecutors;
 import com.micronautics.util.HttpGetter;
 
-/** Invoke Future as a non-blocking function call, executed on another thread.
+/** TODO need a better use case. 
+ * Invoke Future as a non-blocking function call, executed on another thread.
  *  This example uses map to print URLs of web pages that contain the string {{{Simpler Concurrency}}}.
  *  Non-blocking fold is executed on the thread of the last Future to be completed.
  * If this Future is completed with an exception then the new Future will also contain this exception.
@@ -44,11 +45,12 @@ class ReduceBlocking {
      * These futures will run under daemonContext. */
     private ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
 
-    /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> result = new ArrayList<String>();
-
-    /** Composable function for both versions */
-    private Function2<ArrayList<String>, String, String> applyFunction = new Function2<ArrayList<String>, String, String>() {
+    /** Composable function for both versions.
+     * Akka has a <a href="http://www.assembla.com/spaces/akka/tickets/1663-future-reduce-should-accept-function2-r-t-r-">bug</a> which means that this class is broken. 
+     * Future.reduce is currently defined to accept a Function2[R, T, T]. 
+     * R could be a supertype of T, but that can currently not be exploited since the operation must return a T. 
+     * Correct would be Function2<R,T,R>. It's wrong for Java and Scala. */
+    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
                 result.add(contents);
@@ -64,11 +66,12 @@ class ReduceBlocking {
     }
 
     public void doit() {
-    	result.clear();
+        /* Commented to compile until Bug 1663 is fixed. 
         Future<ArrayList<String>> resultFuture = Futures.reduce(daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
         System.out.println("Blocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        */
     }
     
     /** Demonstrates how to invoke fold() and block until a result is available */

@@ -42,7 +42,11 @@ class ReduceNonBlocking {
     /** Accumulates result during fold(), also provides initial results, if desired. */
     protected ArrayList<String> result = new ArrayList<String>();
 
-    /** Composable function for both versions */
+    /** Composable function for both versions.
+     * Akka has a <a href="http://www.assembla.com/spaces/akka/tickets/1663-future-reduce-should-accept-function2-r-t-r-">bug</a> which means that this class is broken. 
+     * Future.reduce is currently defined to accept a Function2[R, T, T]. 
+     * R could be a supertype of T, but that can currently not be exploited since the operation must return a T. 
+     * Correct would be Function2<R,T,R>. It's wrong for Java and Scala. */
     private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
@@ -80,9 +84,10 @@ class ReduceNonBlocking {
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
     void doit() {
-    	result.clear();
-        Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
+    	/* Commented to compile until Bug 1663 is fixed. 
+        Future<ArrayList<String>> resultFuture = Futures.reduce(futures, applyFunction, context);
         resultFuture.onComplete(completionFunction);
+        */
     }
 
     public static void main(String[] args) {
