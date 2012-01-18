@@ -82,13 +82,13 @@ class FoldJava {
     };
 
 
-    {   /* HttpGetter implements Callable */
+    {   /* Build array of Futures that will run on daemon threads. Remember that HttpGetter implements Callable */
     	daemonFutures.add(Futures.future(new HttpGetter("http://akka.io/"), daemonContext));
         daemonFutures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), daemonContext));
         daemonFutures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), daemonContext));
     }
 
-    {   /* HttpGetter implements Callable */
+    {   /* Build array of Futures that will run on regular threads. Remember that HttpGetter implements Callable */
     	futures.add(Futures.future(new HttpGetter("http://akka.io/"), context));
         futures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), context));
         futures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), context));
