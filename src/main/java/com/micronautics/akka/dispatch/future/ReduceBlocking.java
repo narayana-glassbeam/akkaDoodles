@@ -70,6 +70,7 @@ class ReduceBlocking {
         
     	public ExpensiveCalc(Integer x) { this.x = x; }
 		
+    	/** Pretend this method consumes a lot of computational resource */
     	@Override
 		public Long call() { return 1L * x * x; }
     }

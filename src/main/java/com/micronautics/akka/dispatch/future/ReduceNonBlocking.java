@@ -76,11 +76,13 @@ class ReduceNonBlocking {
         new ReduceNonBlocking().doit();
     }
     
+    
     private class ExpensiveCalc implements Callable<Long> {
         private Integer x;
         
     	public ExpensiveCalc(Integer x) { this.x = x; }
 		
+    	/** Pretend this method consumes a lot of computational resource */
     	@Override
 		public Long call() { return 1L * x * x; }
     }
