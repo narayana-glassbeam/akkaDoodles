@@ -1,7 +1,9 @@
 package com.micronautics.akka.dispatch.future;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 import akka.dispatch.Await;
@@ -12,7 +14,6 @@ import akka.japi.Function2;
 import akka.util.Duration;
 
 import com.micronautics.concurrent.DaemonExecutors;
-import com.micronautics.util.HttpGetter;
 
 /** TODO need a better use case. 
  * Invoke Future as a non-blocking function call, executed on another thread.
@@ -43,39 +44,42 @@ class ReduceBlocking {
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under daemonContext. */
-    private ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
+    private ArrayList<Future<Long>> daemonFutures = new ArrayList<Future<Long>>();
 
     /** Composable function for both versions.
      * Akka has a <a href="http://www.assembla.com/spaces/akka/tickets/1663-future-reduce-should-accept-function2-r-t-r-">bug</a> which means that this class is broken. 
-     * Future.reduce is currently defined to accept a Function2[R, R, T]. 
-     * R could be a supertype of T, but that can currently not be exploited since the operation must return a T. 
-     * Correct would be Function2<R,T,R>. It's wrong for Java and Scala. */
-    private Function2<ArrayList<String>, ArrayList<String>, String> applyFunction = new Function2<ArrayList<String>, ArrayList<String>, String>() {
+     * Future.reduce is currently defined to accept a Function2[R, R, T]. */
+    private Function2<Long, Long, Long> sum = new Function2<Long, Long, Long>() {
     	
-    	public ArrayList<String> apply(ArrayList<String> result, ArrayList<String> items) {
-            for (String item : items)
-	        	if (item.indexOf("Simpler Concurrency")>0)
-	                result.add(item);
-            return result;
+    	public Long apply(Long result, Long item) {
+            return result + item;
         }
     };
 
 
     {   /* Build array of Futures that will run on daemon threads. Remember that HttpGetter implements Callable */
-    	daemonFutures.add(Futures.future(new HttpGetter("http://akka.io/"), daemonContext));
-        daemonFutures.add(Futures.future(new HttpGetter("http://www.playframework.org/"), daemonContext));
-        daemonFutures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), daemonContext));
+    	for (int i=1; i<=100; i++)
+    	    daemonFutures.add(Futures.future(new ExpensiveCalc(i), daemonContext));
     }
 
     public void doit() {
-        Future<ArrayList<String>> resultFuture = Futures.reduce(daemonFutures, applyFunction, daemonContext);
+        Future<Long> resultFuture = Futures.reduce(daemonFutures, sum, daemonContext);
         // Await.result() blocks until the Future completes
-        ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
-        System.out.println("Blocking reduce: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        Long result = (Long) Await.result(resultFuture, timeout);
+        System.out.println("Blocking Java reduce result: " + result);
     }
     
     /** Demonstrates how to invoke reduce() and block until a result is available */
     public static void main(String[] args) {
     	new ReduceBlocking().doit();
+    }
+    
+    class ExpensiveCalc implements Callable<Long> {
+        private Integer x;
+        
+    	public ExpensiveCalc(Integer x) { this.x = x; }
+		
+    	@Override
+		public Long call() { return 1L * x * x; }
     }
 }

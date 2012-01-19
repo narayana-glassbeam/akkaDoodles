@@ -12,12 +12,12 @@ import akka.dispatch.Future
   * @see http://days2011.scala-lang.org/node/138/283 */
 object Reduce extends App {
   implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
-  val map = (1 to 100) map (x => Future { expensiveCalc(x) })
+  val expensiveFutures = (1 to 100) map (x => Future { expensiveCalc(x) })
   
-  Future.reduce(map)(_ + _) onComplete { f => 
+  Future.reduce(expensiveFutures)(_ + _) onComplete { f => 
     f match {
-      case Right(result)   => println("Result: " + result)
-      case Left(exception) => println("Exception: " + exception)
+      case Right(result)   => println("Nonblocking Scala reduce result: " + result)
+      case Left(exception) => println("Nonblocking Scala reduce exception: " + exception)
     }
     System.exit(0)
   }
