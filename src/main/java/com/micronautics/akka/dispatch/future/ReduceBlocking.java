@@ -17,7 +17,7 @@ import com.micronautics.concurrent.DaemonExecutors;
 
 /** Invoke Future as a non-blocking function call, executed on another thread.
  * This example uses reduce to sum the results of a Future of an expensive computation.
- * Non-blocking reduce is executed on the thread of the last Future to be completed.
+ * Reduce is executed on the thread of the last Future to be completed, and apply blocks until the futures have all been processed.
  * 
  * The call to Futures.future() forwards the Callables to Future.apply(), part of the Scala API. 
  * They are then sent to the ExecutionContext to be run. 
@@ -65,7 +65,7 @@ class ReduceBlocking {
     	new ReduceBlocking().doit();
     }
     
-    class ExpensiveCalc implements Callable<Long> {
+    private class ExpensiveCalc implements Callable<Long> {
         private Integer x;
         
     	public ExpensiveCalc(Integer x) { this.x = x; }
