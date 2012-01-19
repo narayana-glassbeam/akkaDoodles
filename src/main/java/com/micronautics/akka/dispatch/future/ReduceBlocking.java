@@ -47,13 +47,15 @@ class ReduceBlocking {
 
     /** Composable function for both versions.
      * Akka has a <a href="http://www.assembla.com/spaces/akka/tickets/1663-future-reduce-should-accept-function2-r-t-r-">bug</a> which means that this class is broken. 
-     * Future.reduce is currently defined to accept a Function2[R, T, T]. 
+     * Future.reduce is currently defined to accept a Function2[R, R, T]. 
      * R could be a supertype of T, but that can currently not be exploited since the operation must return a T. 
      * Correct would be Function2<R,T,R>. It's wrong for Java and Scala. */
-    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
-        public ArrayList<String> apply(ArrayList<String> result, String contents) {
-            if (contents.indexOf("Simpler Concurrency")>0)
-                result.add(contents);
+    private Function2<ArrayList<String>, ArrayList<String>, String> applyFunction = new Function2<ArrayList<String>, ArrayList<String>, String>() {
+    	
+    	public ArrayList<String> apply(ArrayList<String> result, ArrayList<String> items) {
+            for (String item : items)
+	        	if (item.indexOf("Simpler Concurrency")>0)
+	                result.add(item);
             return result;
         }
     };
@@ -66,12 +68,10 @@ class ReduceBlocking {
     }
 
     public void doit() {
-        /* Commented to compile until Bug 1663 is fixed. 
         Future<ArrayList<String>> resultFuture = Futures.reduce(daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
         System.out.println("Blocking reduce: " + result.size() + " web pages contained 'Simpler Concurrency'.");
-        */
     }
     
     /** Demonstrates how to invoke reduce() and block until a result is available */
