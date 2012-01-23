@@ -15,7 +15,8 @@ import akka.japi.Procedure2;
 import com.micronautics.util.HttpGetterWithUrl;
 import com.micronautics.util.UrlAndContents;
 
-/** '''Future<A> filter<A>(Function<A, Boolean>);''' */
+/** '''Future<A> filter<A>(Function<A, Boolean>);'''
+ * Associates url with page contents by using helper class */
 public class FilterNonBlocking3 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -31,6 +32,7 @@ public class FilterNonBlocking3 {
     	new HttpGetterWithUrl("http://nbronson.github.com/scala-stm/")
     })); 
 
+    /** Java type checking does not give clues as to the required types of Procedure2 */
     private Procedure2<Throwable,UrlAndContents> completionFunction = new Procedure2<Throwable,UrlAndContents>() {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, UrlAndContents result) {
@@ -40,7 +42,8 @@ public class FilterNonBlocking3 {
         }
     };
       
-    /**  Invoked after future completes */
+    /** Invoked after future completes 
+     * Java type checking does not give clues as to the required types of Function */
     private Function<UrlAndContents, Boolean> filterFunction = new Function<UrlAndContents, Boolean>() {
     	public Boolean apply(UrlAndContents urlAndContents) {
             return urlAndContents.contents.indexOf("Simpler Concurrency")>=0;
