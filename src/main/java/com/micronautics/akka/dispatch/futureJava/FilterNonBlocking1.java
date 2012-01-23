@@ -15,7 +15,7 @@ import akka.japi.Procedure2;
 import com.micronautics.util.HttpGetter;
 
 /** '''Future<A> filter<A>(Function<A, Boolean>);''' */
-public class FilterNonBlocking {
+public class FilterNonBlocking2 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -59,7 +59,7 @@ public class FilterNonBlocking {
     }
     
     public static void main(String[] args) {
-        FilterNonBlocking example = new FilterNonBlocking();
+        FilterNonBlocking2 example = new FilterNonBlocking2();
         example.doit();
     }
 }
