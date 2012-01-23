@@ -38,8 +38,8 @@ public class FilterNonBlocking1 {
             	public Boolean apply(String urlStr) {
                     return urlStr.indexOf("Simpler Concurrency")>=0;
                 }
-            });
-            resultFuture.onComplete(new Procedure2<Throwable,String>() {
+            }); // urlStr is out of scope, so it cannot be associated with result in the next block
+            resultFuture.onComplete(new Procedure2<Throwable, String>() {
             	/** This method is executed asynchronously, probably after the mainline has completed */
                 public void apply(Throwable exception, String result) {
                     if (result != null) {
