@@ -31,7 +31,8 @@ public class FilterNonBlocking2 {
     })); 
 
     private Procedure2<Throwable,String> completionFunction = new Procedure2<Throwable,String>() {
-    	/** This method is executed asynchronously, probably after the mainline has completed */
+    	/** This method is executed asynchronously, probably after the mainline has completed.
+    	 * Cannot associate the url with the resulting page contents */
         public void apply(Throwable exception, String result) {
             if (result != null) {
                 System.out.println("Nonblocking Java filter result: " + result.substring(0, 20) + "...");
