@@ -17,7 +17,7 @@ import com.micronautics.util.HttpGetter;
 /** '''Future<A> filter<A>(Function<A, Boolean>);''' 
  * This example introduces extra method definitions to increase legibility, at the expense of increased verbosity.
  * Another difference from the Scala version is that the input (urls) are not associated with the resulting web pages; this
- * is due to a difference in how scopes are managed between Scala and Java. FilterNonBlocking3 corrects this problem.*/
+ * is due to a difference in how scopes are managed between Scala and Java. FilterNonBlocking2b corrects this problem.*/
 public class FilterNonBlocking2a {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
