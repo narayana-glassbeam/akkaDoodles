@@ -15,7 +15,7 @@ import akka.japi.Procedure2;
 import com.micronautics.util.HttpGetter;
 
 /** '''Future<A> filter<A>(Function<A, Boolean>);''' */
-public class FilterNonBlocking2 {
+public class FilterNonBlocking1 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -30,36 +30,31 @@ public class FilterNonBlocking2 {
     	new HttpGetter("http://nbronson.github.com/scala-stm/")
     })); 
 
-    private Procedure2<Throwable,String> completionFunction = new Procedure2<Throwable,String>() {
-    	/** This method is executed asynchronously, probably after the mainline has completed */
-        public void apply(Throwable exception, String result) {
-            if (result != null) {
-                System.out.println("Nonblocking Java filter result: " + result.substring(0, 20) + "...");
-            } else {
-                System.out.println("Exception: " + exception);
-            }
-            executorService.shutdown(); // terminates program
-        }
-    };
-      
-    /**  Invoked after future completes */
-    private Function<String, Boolean> filterFunction = new Function<String, Boolean>() {
-    	public Boolean apply(String urlStr) {
-            return urlStr.indexOf("scala")>=0;
-        }
-    };
-
     
     private void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
-            resultFuture.filter(filterFunction);
-            resultFuture.onComplete(completionFunction);
+            resultFuture.filter(new Function<String, Boolean>() {
+            	public Boolean apply(String urlStr) {
+                    return urlStr.indexOf("Simpler Concurrency")>=0;
+                }
+            });
+            resultFuture.onComplete(new Procedure2<Throwable,String>() {
+            	/** This method is executed asynchronously, probably after the mainline has completed */
+                public void apply(Throwable exception, String result) {
+                    if (result != null) {
+                        System.out.println("Nonblocking Java filter result: " + result.substring(0, 20) + "...");
+                    } else {
+                        System.out.println("Exception: " + exception);
+                    }
+                    executorService.shutdown(); // terminates program
+                }
+            });
         }
     }
     
     public static void main(String[] args) {
-        FilterNonBlocking2 example = new FilterNonBlocking2();
+        FilterNonBlocking1 example = new FilterNonBlocking1();
         example.doit();
     }
 }

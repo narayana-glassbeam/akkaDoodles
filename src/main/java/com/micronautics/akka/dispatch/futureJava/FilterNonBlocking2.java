@@ -45,7 +45,7 @@ public class FilterNonBlocking2 {
     /**  Invoked after future completes */
     private Function<String, Boolean> filterFunction = new Function<String, Boolean>() {
     	public Boolean apply(String urlStr) {
-            return urlStr.indexOf("scala")>=0;
+            return urlStr.indexOf("Simpler Concurrency")>=0;
         }
     };
 

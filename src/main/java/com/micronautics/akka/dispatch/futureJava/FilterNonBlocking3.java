@@ -12,10 +12,11 @@ import akka.dispatch.japi.Future;
 import akka.japi.Function;
 import akka.japi.Procedure2;
 
-import com.micronautics.util.HttpGetter;
+import com.micronautics.util.HttpGetterWithUrl;
+import com.micronautics.util.UrlAndContents;
 
 /** '''Future<A> filter<A>(Function<A, Boolean>);''' */
-public class FilterNonBlocking2 {
+public class FilterNonBlocking3 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -24,42 +25,39 @@ public class FilterNonBlocking2 {
         public void execute(Runnable runnable) { executorService.execute(runnable); }
     };
     
-    private List<HttpGetter> httpGetters = new LinkedList<HttpGetter> (Arrays.asList(new HttpGetter[] {
-    	new HttpGetter("http://akka.io/"),
-    	new HttpGetter("http://www.playframework.org/"),
-    	new HttpGetter("http://nbronson.github.com/scala-stm/")
+    private List<HttpGetterWithUrl> httpGetters = new LinkedList<HttpGetterWithUrl> (Arrays.asList(new HttpGetterWithUrl[] {
+    	new HttpGetterWithUrl("http://akka.io/"),
+    	new HttpGetterWithUrl("http://www.playframework.org/"),
+    	new HttpGetterWithUrl("http://nbronson.github.com/scala-stm/")
     })); 
 
-    private Procedure2<Throwable,String> completionFunction = new Procedure2<Throwable,String>() {
+    private Procedure2<Throwable,UrlAndContents> completionFunction = new Procedure2<Throwable,UrlAndContents>() {
     	/** This method is executed asynchronously, probably after the mainline has completed */
-        public void apply(Throwable exception, String result) {
-            if (result != null) {
-                System.out.println("Nonblocking Java filter result: " + result.substring(0, 20) + "...");
-            } else {
-                System.out.println("Exception: " + exception);
-            }
+        public void apply(Throwable exception, UrlAndContents result) {
+            if (result.contents != null) 
+                System.out.println("Nonblocking Java filter result: " + result.url);
             executorService.shutdown(); // terminates program
         }
     };
       
     /**  Invoked after future completes */
-    private Function<String, Boolean> filterFunction = new Function<String, Boolean>() {
-    	public Boolean apply(String urlStr) {
-            return urlStr.indexOf("scala")>=0;
+    private Function<UrlAndContents, Boolean> filterFunction = new Function<UrlAndContents, Boolean>() {
+    	public Boolean apply(UrlAndContents urlAndContents) {
+            return urlAndContents.contents.indexOf("Simpler Concurrency")>=0;
         }
     };
 
     
     private void doit() {
-        for (HttpGetter httpGetter : httpGetters) {
-        	Future<String> resultFuture = Futures.future(httpGetter, context);
+        for (HttpGetterWithUrl httpGetter : httpGetters) {
+        	Future<UrlAndContents> resultFuture = Futures.future(httpGetter, context);
             resultFuture.filter(filterFunction);
             resultFuture.onComplete(completionFunction);
         }
     }
     
     public static void main(String[] args) {
-        FilterNonBlocking2 example = new FilterNonBlocking2();
+        FilterNonBlocking3 example = new FilterNonBlocking3();
         example.doit();
     }
 }
