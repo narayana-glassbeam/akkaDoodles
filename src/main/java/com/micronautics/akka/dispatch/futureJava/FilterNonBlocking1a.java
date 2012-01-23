@@ -18,7 +18,7 @@ import com.micronautics.util.HttpGetter;
  * This example minimizes method definitions, like the Scala version, but unlike the Scala version is not very readable.
  * Another difference from the Scala version is that the input (urls) are not associated with the resulting web pages; this
  * is due to a difference in how scopes are managed between Scala and Java. FilterNonBlocking1b and FilterNonBlocking2b correct this problem. */
-public class FilterNonBlocking1 {
+public class FilterNonBlocking1a {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -59,7 +59,7 @@ public class FilterNonBlocking1 {
     }
     
     public static void main(String[] args) {
-        FilterNonBlocking1 example = new FilterNonBlocking1();
+        FilterNonBlocking1a example = new FilterNonBlocking1a();
         example.doit();
     }
 }
