@@ -37,13 +37,13 @@ public class FilterNonBlocking1 {
     private void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
-            // Java type checking does not give clues as to the required types of Function:
+            // Java type checking does not give clues as to the required types for Function:
             resultFuture.filter(new Function<String, Boolean>() {
             	public Boolean apply(String urlStr) {
                     return urlStr.indexOf("Simpler Concurrency")>=0;
                 }
             }); // urlStr is out of scope, so it cannot be associated with result in the next block
-            // Java type checking does not give clues as to the required types of Procedure2:
+            // Java type checking does not give clues as to the required types for Procedure2:
             resultFuture.onComplete(new Procedure2<Throwable, String>() { 
             	/** This method is executed asynchronously, probably after the mainline has completed */
                 public void apply(Throwable exception, String result) {

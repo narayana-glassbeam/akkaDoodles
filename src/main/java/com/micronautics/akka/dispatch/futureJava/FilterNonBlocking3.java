@@ -33,7 +33,7 @@ public class FilterNonBlocking3 {
     	new HttpGetterWithUrl("http://nbronson.github.com/scala-stm/")
     })); 
 
-    /** Java type checking does not give clues as to the required types of Procedure2 */
+    /** Java type checking does not give clues as to the required types for Procedure2 */
     private Procedure2<Throwable,UrlAndContents> completionFunction = new Procedure2<Throwable,UrlAndContents>() {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, UrlAndContents result) {
@@ -44,7 +44,7 @@ public class FilterNonBlocking3 {
     };
       
     /** Invoked after future completes 
-     * Java type checking does not give clues as to the required types of Function */
+     * Java type checking does not give clues as to the required types for Function */
     private Function<UrlAndContents, Boolean> filterFunction = new Function<UrlAndContents, Boolean>() {
     	public Boolean apply(UrlAndContents urlAndContents) {
             return urlAndContents.contents.indexOf("Simpler Concurrency")>=0;
