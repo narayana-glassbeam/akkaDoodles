@@ -14,7 +14,10 @@ import akka.japi.Procedure2;
 
 import com.micronautics.util.HttpGetter;
 
-/** '''Future<A> filter<A>(Function<A, Boolean>);''' */
+/** '''Future<A> filter<A>(Function<A, Boolean>);'''
+ * This example minimizes method definitions, like the Scala version, but unlike the Scala version is not very readable.
+ * Another difference from the Scala version is that the input (urls) are not associated with the resulting web pages; this
+ * is due to a difference in how scopes are managed between Scala and Java. FilterNonBlocking3 corrects this problem. */
 public class FilterNonBlocking1 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);

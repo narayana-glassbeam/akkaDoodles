@@ -16,7 +16,8 @@ import com.micronautics.util.HttpGetterWithUrl;
 import com.micronautics.util.UrlAndContents;
 
 /** '''Future<A> filter<A>(Function<A, Boolean>);'''
- * Associates url with page contents by using the HttpGetterWithUrl helper class */
+ * This example is similar to FilterNonBlocking2 in that extra method definitions to increase legibility, at the expense of increased verbosity.
+ * This example associates urls with their page contents by using the HttpGetterWithUrl helper class. */
 public class FilterNonBlocking3 {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
