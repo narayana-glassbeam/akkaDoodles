@@ -5,10 +5,6 @@ import java.util.concurrent.Executors
 import akka.dispatch.ExecutionContext
 
 
-/** '''Future.apply()''' Non-blocking function call, executed on another thread.
-  *
-  * {{{def apply (): T @util.continuations.package.cps[akka.dispatch.Future[Any]]}}}
-  */
 object ScopeSin extends App {
   val executorService = Executors.newFixedThreadPool(10)
   implicit val context = ExecutionContext.fromExecutor(executorService)
