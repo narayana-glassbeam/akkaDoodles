@@ -53,7 +53,7 @@ class ReduceBlockingJava {
     	    daemonFutures.add(Futures.future(new ExpensiveCalc(i), daemonContext));
     }
 
-    private void doit() {
+    public void doit() {
         Future<Long> resultFuture = Futures.reduce(daemonFutures, sum, daemonContext);
         // Await.result() blocks until the Future completes
         Long result = (Long) Await.result(resultFuture, timeout);

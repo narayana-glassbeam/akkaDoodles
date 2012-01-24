@@ -52,7 +52,7 @@ public class FilterNonBlocking2b {
     };
 
 
-    private void doit() {
+    public void doit() {
         for (HttpGetterWithUrl httpGetter : httpGetters) {
         	Future<UrlAndContents> resultFuture = Futures.future(httpGetter, context);
             resultFuture.filter(filterFunction);

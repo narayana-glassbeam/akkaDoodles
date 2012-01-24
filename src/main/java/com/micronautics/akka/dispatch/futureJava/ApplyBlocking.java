@@ -45,7 +45,7 @@ class ApplyBlocking {
     };
 
 
-    private void doit() {
+    public void doit() {
         Future<Integer> resultFuture = Futures.future(callable, daemonContext);
         // Await.result() blocks until the Future completes
         Integer result = (Integer) Await.result(resultFuture, timeout);

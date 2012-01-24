@@ -56,7 +56,7 @@ public class FilterNonBlocking2a {
     };
 
 
-    private void doit() {
+    public void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
             resultFuture.filter(filterFunction);

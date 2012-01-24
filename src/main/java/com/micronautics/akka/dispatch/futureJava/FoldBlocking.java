@@ -63,7 +63,7 @@ class FoldBlocking {
         daemonFutures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), daemonContext));
     }
 
-    private void doit() {
+    public void doit() {
         Future<ArrayList<String>> resultFuture = Futures.fold(initialValue, daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);

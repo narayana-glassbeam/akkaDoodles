@@ -63,7 +63,7 @@ class TraverseBlocking {
         urls.add("http://nbronson.github.com/scala-stm/");
     }
 
-    private void doit() {
+    public void doit() {
         Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         LinkedList<String> result = (LinkedList<String>) Await.result(resultFuture, timeout);

@@ -79,7 +79,7 @@ class TraverseNonBlocking {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    private void doit() {
+    public void doit() {
         Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, context);
         resultFuture.onComplete(completionFunction);
     }

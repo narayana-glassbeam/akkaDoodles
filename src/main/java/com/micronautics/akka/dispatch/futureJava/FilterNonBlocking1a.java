@@ -34,7 +34,7 @@ public class FilterNonBlocking1a {
     }));
 
 
-    private void doit() {
+    public void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
             // Java type checking does not give clues as to the required types for Function:
