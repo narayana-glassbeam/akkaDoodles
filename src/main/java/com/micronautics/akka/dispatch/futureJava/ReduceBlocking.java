@@ -26,7 +26,7 @@ import com.micronautics.concurrent.DaemonExecutors;
  * 
  * Future.reduce accepts a Function2[R, R, T]. 
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
-class ReduceBlockingJava {
+class ReduceBlocking {
     /** daemonExecutorService creates daemon threads, which shut down when the application exits. */
     private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
 
@@ -62,7 +62,7 @@ class ReduceBlockingJava {
     
     /** Demonstrates how to invoke reduce() and block until a result is available */
     public static void main(String[] args) {
-    	new ReduceBlockingJava().doit();
+    	new ReduceBlocking().doit();
     }
     
     private class ExpensiveCalc implements Callable<Long> {

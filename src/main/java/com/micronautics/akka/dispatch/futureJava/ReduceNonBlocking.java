@@ -22,7 +22,7 @@ import akka.japi.Procedure2;
  * 
  * Future.reduce accepts a Function2[R, R, T]. 
  * @see https://github.com/jboner/akka/blob/releasing-2.0-M2/akka-docs/java/code/akka/docs/future/FutureDocTestBase.java */
-class ReduceNonBlockingJava {
+class ReduceNonBlocking {
     /** executorService creates regular threads, which continue running when the application tries to exit. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -73,7 +73,7 @@ class ReduceNonBlockingJava {
     }
 
     public static void main(String[] args) {
-        new ReduceNonBlockingJava().doit();
+        new ReduceNonBlocking().doit();
     }
     
     
