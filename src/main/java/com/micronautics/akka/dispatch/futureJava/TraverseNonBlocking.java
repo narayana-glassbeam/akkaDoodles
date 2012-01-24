@@ -32,23 +32,23 @@ class TraverseNonBlocking {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
     /** Collection of String, which Futures.traverse will turn into a Future of a collection.
      * The futures will run under a regular context. */
-    private ArrayList<String> urls = new ArrayList<String>();
+    private final ArrayList<String> urls = new ArrayList<String>();
 
     /** Composable function for both versions */
-    private Function<String, Future<String>> applyFunction = new Function<String, Future<String>>() {
+    private final Function<String, Future<String>> applyFunction = new Function<String, Future<String>>() {
         public Future<String> apply(final String url) {
             return Futures.future(new HttpGetter(url, "Simpler Concurrency"), context);
         }
     };
     
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable,LinkedList<String>> completionFunction = new Procedure2<Throwable,LinkedList<String>>() {
+    private final Procedure2<Throwable,LinkedList<String>> completionFunction = new Procedure2<Throwable,LinkedList<String>>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, LinkedList<String> result) {
@@ -57,7 +57,7 @@ class TraverseNonBlocking {
                 for (String r : result)
                 	if (r.length()>0)
                 		matchCount++;
-                System.out.println("Nonblocking traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking Java traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -79,7 +79,7 @@ class TraverseNonBlocking {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    void doit() {
+    private void doit() {
         Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, context);
         resultFuture.onComplete(completionFunction);
     }

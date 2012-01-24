@@ -28,12 +28,12 @@ class ApplyNonBlocking {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable,Integer> completionFunction = new Procedure2<Throwable,Integer>() {
+    private final Procedure2<Throwable,Integer> completionFunction = new Procedure2<Throwable,Integer>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, Integer result) {
@@ -46,7 +46,7 @@ class ApplyNonBlocking {
         }
     };
 
-    private Callable<Integer> callable = new Callable<Integer>() {
+    private final Callable<Integer> callable = new Callable<Integer>() {
         public Integer call() {
             return 2 + 3;
         }
@@ -59,7 +59,7 @@ class ApplyNonBlocking {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    void doit() {
+    private void doit() {
         Future<Integer> resultFuture = Futures.future(callable, context);
         resultFuture.onComplete(completionFunction);
     }

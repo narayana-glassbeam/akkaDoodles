@@ -14,7 +14,7 @@ import akka.japi.Procedure2;
 
 import com.micronautics.util.HttpGetter;
 
-/** '''Future<A> filter<A>(Function<A, Boolean>);''' 
+/** '''Future<A> filter<A>(Function<A, Boolean>);'''
  * This example introduces extra method definitions to increase legibility, at the expense of increased verbosity.
  * Another difference from the Scala version is that the input (urls) are not associated with the resulting web pages; this
  * is due to a difference in how scopes are managed between Scala and Java. FilterNonBlocking2b corrects this problem.*/
@@ -23,18 +23,18 @@ public class FilterNonBlocking2a {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable runnable) { executorService.execute(runnable); }
     };
-    
-    private List<HttpGetter> httpGetters = new LinkedList<HttpGetter> (Arrays.asList(new HttpGetter[] {
+
+    private final List<HttpGetter> httpGetters = new LinkedList<HttpGetter> (Arrays.asList(new HttpGetter[] {
     	new HttpGetter("http://akka.io/"),
     	new HttpGetter("http://www.playframework.org/"),
     	new HttpGetter("http://nbronson.github.com/scala-stm/")
-    })); 
+    }));
 
     /** Java type checking does not give clues as to the required types for Procedure2 */
-    private Procedure2<Throwable,String> completionFunction = new Procedure2<Throwable,String>() {
+    private final Procedure2<Throwable,String> completionFunction = new Procedure2<Throwable,String>() {
     	/** This method is executed asynchronously, probably after the mainline has completed.
     	 * Cannot associate the url with the resulting page contents */
         public void apply(Throwable exception, String result) {
@@ -46,16 +46,16 @@ public class FilterNonBlocking2a {
             executorService.shutdown(); // terminates program
         }
     };
-      
-    /** Invoked after future completes 
+
+    /** Invoked after future completes
      * Java type checking does not give clues as to the required types for Function */
-    private Function<String, Boolean> filterFunction = new Function<String, Boolean>() {
+    private final Function<String, Boolean> filterFunction = new Function<String, Boolean>() {
     	public Boolean apply(String urlStr) {
             return urlStr.indexOf("Simpler Concurrency")>=0;
         }
     };
 
-    
+
     private void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
@@ -63,7 +63,7 @@ public class FilterNonBlocking2a {
             resultFuture.onComplete(completionFunction);
         }
     }
-    
+
     public static void main(String[] args) {
         FilterNonBlocking2a example = new FilterNonBlocking2a();
         example.doit();

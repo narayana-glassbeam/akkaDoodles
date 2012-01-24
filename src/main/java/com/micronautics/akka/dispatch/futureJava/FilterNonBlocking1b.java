@@ -23,17 +23,17 @@ public class FilterNonBlocking1b {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable runnable) { executorService.execute(runnable); }
     };
-    
-    private List<HttpGetterWithUrl> httpGettersWithUrl = new LinkedList<HttpGetterWithUrl> (Arrays.asList(new HttpGetterWithUrl[] {
+
+    private final List<HttpGetterWithUrl> httpGettersWithUrl = new LinkedList<HttpGetterWithUrl> (Arrays.asList(new HttpGetterWithUrl[] {
     	new HttpGetterWithUrl("http://akka.io/"),
     	new HttpGetterWithUrl("http://www.playframework.org/"),
     	new HttpGetterWithUrl("http://nbronson.github.com/scala-stm/")
-    })); 
+    }));
 
-    
+
     private void doit() {
         for (HttpGetterWithUrl httpGetterWithUrl : httpGettersWithUrl) {
         	Future<UrlAndContents> resultFuture = Futures.future(httpGetterWithUrl, context);
@@ -44,7 +44,7 @@ public class FilterNonBlocking1b {
                 }
             }); // urlStr is out of scope, so it cannot be associated with result in the next block
             // Java type checking does not give clues as to the required types for Procedure2:
-            resultFuture.onComplete(new Procedure2<Throwable, UrlAndContents>() { 
+            resultFuture.onComplete(new Procedure2<Throwable, UrlAndContents>() {
             	/** This method is executed asynchronously, probably after the mainline has completed */
                 public void apply(Throwable exception, UrlAndContents urlAndContents) {
                     if (urlAndContents.contents != null) {
@@ -57,7 +57,7 @@ public class FilterNonBlocking1b {
             });
         }
     }
-    
+
     public static void main(String[] args) {
         FilterNonBlocking1b example = new FilterNonBlocking1b();
         example.doit();

@@ -23,17 +23,17 @@ public class FilterNonBlocking1a {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable runnable) { executorService.execute(runnable); }
     };
-    
-    private List<HttpGetter> httpGetters = new LinkedList<HttpGetter> (Arrays.asList(new HttpGetter[] {
+
+    private final List<HttpGetter> httpGetters = new LinkedList<HttpGetter> (Arrays.asList(new HttpGetter[] {
     	new HttpGetter("http://akka.io/"),
     	new HttpGetter("http://www.playframework.org/"),
     	new HttpGetter("http://nbronson.github.com/scala-stm/")
-    })); 
+    }));
 
-    
+
     private void doit() {
         for (HttpGetter httpGetter : httpGetters) {
         	Future<String> resultFuture = Futures.future(httpGetter, context);
@@ -44,7 +44,7 @@ public class FilterNonBlocking1a {
                 }
             }); // urlStr is out of scope, so it cannot be associated with result in the next block
             // Java type checking does not give clues as to the required types for Procedure2:
-            resultFuture.onComplete(new Procedure2<Throwable, String>() { 
+            resultFuture.onComplete(new Procedure2<Throwable, String>() {
             	/** This method is executed asynchronously, probably after the mainline has completed */
                 public void apply(Throwable exception, String result) {
                     if (result != null) {
@@ -57,7 +57,7 @@ public class FilterNonBlocking1a {
             });
         }
     }
-    
+
     public static void main(String[] args) {
         FilterNonBlocking1a example = new FilterNonBlocking1a();
         example.doit();

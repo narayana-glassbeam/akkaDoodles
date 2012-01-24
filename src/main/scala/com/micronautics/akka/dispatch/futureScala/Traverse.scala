@@ -1,11 +1,12 @@
 package com.micronautics.akka.dispatch.futureScala
 
 import java.net.URL
-import scalax.io._
-import scalax.io.JavaConverters._
+import java.util.concurrent.Executors
 
-import akka.actor.ActorSystem
+import akka.dispatch.ExecutionContext
 import akka.dispatch.Future
+import scalax.io.JavaConverters.asInputConverter
+import scalax.io.Codec
 
 
 /** '''Future.traverse()''' Transforms a {{{Traversable[X] => Future[Traversable[Y]]}}}
@@ -16,7 +17,8 @@ import akka.dispatch.Future
  * Taken from Viktor Klang's "Future of Akka" presentation
  * @see http://days2011.scala-lang.org/node/138/283 */
 object Traverse extends App {
-  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+  val executorService = Executors.newFixedThreadPool(10)
+  implicit val context = ExecutionContext.fromExecutor(executorService)
   val urls = List (
     "http://akka.io/",
     "http://www.playframework.org/",
@@ -25,8 +27,8 @@ object Traverse extends App {
 
   Future.traverse(urls)(url => Future { httpGet(url).length() }) onComplete { f => 
     f match {
-      case Right(result)   => println("Web page lengths: " + result)
-      case Left(exception) => println("Exception: " + exception)
+      case Right(result)   => println("Traverse Scala web page lengths: " + result)
+      case Left(exception) => println("Traverse Scala exception: " + exception)
     }
     System.exit(0)
   }

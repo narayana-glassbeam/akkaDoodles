@@ -27,21 +27,21 @@ class ReduceNonBlockingJava {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under a regular context. */
-    private ArrayList<Future<Long>> futures = new ArrayList<Future<Long>>();
+    private final ArrayList<Future<Long>> futures = new ArrayList<Future<Long>>();
 
     /** Composable function for both versions. */
-    private Function2<Long, Long, Long> sum = new Function2<Long, Long, Long>() {
+    private final Function2<Long, Long, Long> sum = new Function2<Long, Long, Long>() {
     	public Long apply(Long result, Long item) { return result + item; }
     };
     
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable, Long> completionFunction = new Procedure2<Throwable, Long>() {
+    private final Procedure2<Throwable, Long> completionFunction = new Procedure2<Throwable, Long>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, Long result) {
@@ -67,7 +67,7 @@ class ReduceNonBlockingJava {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    void doit() {
+    private void doit() {
         Future<Long> resultFuture = Futures.reduce(futures, sum, context);
         resultFuture.onComplete(completionFunction);
     }

@@ -1,6 +1,8 @@
 package com.micronautics.akka.dispatch.futureScala
 
-import akka.actor.ActorSystem
+import java.util.concurrent.Executors
+
+import akka.dispatch.ExecutionContext
 import akka.dispatch.Future
 
 
@@ -13,13 +15,14 @@ import akka.dispatch.Future
   * Taken from Viktor Klang's "Future of Akka" presentation
   * @see http://days2011.scala-lang.org/node/138/283 */
 object Fold extends App {
-  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+  val executorService = Executors.newFixedThreadPool(10)
+  implicit val context = ExecutionContext.fromExecutor(executorService)
   val futures = (1 to 10) map (x => Future { expensiveCalc(x) })
   
   Future.fold(futures)(0)(_ + _) onComplete { f => 
     f match {
-      case Right(result)   => println("Result: " + result)
-      case Left(exception) => println("Exception: " + exception)
+      case Right(result)   => println("Fold Scala result: " + result)
+      case Left(exception) => println("Fold Scala exception: " + exception)
     }
     System.exit(0)
   }

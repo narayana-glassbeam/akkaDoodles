@@ -1,11 +1,12 @@
 package com.micronautics.akka.dispatch.futureScala
 
 import java.net.URL
-import scalax.io._
-import scalax.io.JavaConverters._
-import akka.actor.ActorSystem
+import java.util.concurrent.Executors
+
+import akka.dispatch.ExecutionContext
 import akka.dispatch.Future
-import scala.MatchError
+import scalax.io.JavaConverters.asInputConverter
+import scalax.io.Codec
 
 /** 
   * '''Future.filter()''' {{{def filter (pred: (T) => Boolean): Future[T]}}}
@@ -16,8 +17,9 @@ import scala.MatchError
   * 
   * There is no way for a {{{Future}}} to represent the lack of results, so {{{Future}}}s that fail a filter contain a {{{MatchError}}} exception (on the Left).
   */
-object Filter extends App {
-  implicit val defaultDispatcher = ActorSystem("MySystem").dispatcher
+object FilterNonBlocking extends App {
+  val executorService = Executors.newFixedThreadPool(10)
+  implicit val context = ExecutionContext.fromExecutor(executorService)
   val urls = List (
     "http://akka.io/",
     "http://www.playframework.org/",
@@ -32,7 +34,7 @@ object Filter extends App {
       pageContents.indexOf("Simpler Concurrency")>=0 // invoked after future completes
     ) onComplete { f => // runs after the filter is evaluated
 	  f match {
-	    case Right(result) => println("Result: " + url)
+	    case Right(result) => println("Scala Filter non-blocking result: " + url)
 	    case Left(_:MatchError) => // if the filter does not match, the exception will contain a benign MatchError
 	    case Left(exception) => 
   	      val msg = exception.getMessage()

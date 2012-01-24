@@ -31,19 +31,19 @@ class ReduceBlockingJava {
     private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates daemon threads. */
-    private ExecutionContext daemonContext = new ExecutionContext() {
+    private final ExecutionContext daemonContext = new ExecutionContext() {
         public void execute(Runnable r) { daemonExecutorService.execute(r); }
     };
 
     /** Maximum length of time to block while waiting for futures to complete */
-    private Duration timeout = Duration.create(10, SECONDS);
+    private final Duration timeout = Duration.create(10, SECONDS);
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under daemonContext. */
-    private ArrayList<Future<Long>> daemonFutures = new ArrayList<Future<Long>>();
+    private final ArrayList<Future<Long>> daemonFutures = new ArrayList<Future<Long>>();
 
     /** Composable function for both versions. */
-    private Function2<Long, Long, Long> sum = new Function2<Long, Long, Long>() {
+    private final Function2<Long, Long, Long> sum = new Function2<Long, Long, Long>() {
     	public Long apply(Long result, Long item) { return result + item; }
     };
 
@@ -53,7 +53,7 @@ class ReduceBlockingJava {
     	    daemonFutures.add(Futures.future(new ExpensiveCalc(i), daemonContext));
     }
 
-    public void doit() {
+    private void doit() {
         Future<Long> resultFuture = Futures.reduce(daemonFutures, sum, daemonContext);
         // Await.result() blocks until the Future completes
         Long result = (Long) Await.result(resultFuture, timeout);

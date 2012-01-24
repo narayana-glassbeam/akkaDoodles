@@ -33,22 +33,22 @@ class SequenceBlocking {
     private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates daemon threads. */
-    private ExecutionContext daemonContext = new ExecutionContext() {
+    private final ExecutionContext daemonContext = new ExecutionContext() {
         public void execute(Runnable r) { daemonExecutorService.execute(r); }
     };
 
     /** Maximum length of time to block while waiting for futures to complete */
-    private Duration timeout = Duration.create(10, SECONDS);
+    private final Duration timeout = Duration.create(10, SECONDS);
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under daemonContext. */
-    private ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
+    private final ArrayList<Future<String>> daemonFutures = new ArrayList<Future<String>>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> initialValue = new ArrayList<String>();
+    protected final ArrayList<String> initialValue = new ArrayList<String>();
 
     /** Composable function for both versions */
-    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
+    private final Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
                 result.add(contents);
@@ -63,11 +63,11 @@ class SequenceBlocking {
         daemonFutures.add(Futures.future(new HttpGetter("http://nbronson.github.com/scala-stm/"), daemonContext));
     }
 
-    public void doit() {
+    private void doit() {
         Future<ArrayList<String>> resultFuture = Futures.fold(initialValue, daemonFutures, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         ArrayList<String> result = (ArrayList<String>) Await.result(resultFuture, timeout);
-        System.out.println("Blocking sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+        System.out.println("Blocking Java sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
     }
     
     /** Demonstrates how to invoke sequence() and block until a result is available */

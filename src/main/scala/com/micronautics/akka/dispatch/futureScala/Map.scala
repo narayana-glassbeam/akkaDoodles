@@ -1,12 +1,12 @@
 package com.micronautics.akka.dispatch.futureScala
 
 import java.net.URL
-import scalax.io._
-import scalax.io.JavaConverters._
-import akka.actor.ActorSystem
-import akka.dispatch.Future
 import java.util.concurrent.Executors
+
 import akka.dispatch.ExecutionContext
+import akka.dispatch.Future
+import scalax.io.JavaConverters.asInputConverter
+import scalax.io.Codec
 
 /** 
   * Map creates a new Future by applying a function to a successful Future result. 

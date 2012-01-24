@@ -31,16 +31,16 @@ class SequenceNonBlocking {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under a regular context. */
-    private LinkedList<Future<String>> futures = new LinkedList<Future<String>>();
+    private final LinkedList<Future<String>> futures = new LinkedList<Future<String>>();
 
     /** Composable function for both versions */
-    private Function<Iterable<String>, LinkedList<String>> applyFunction = new Function<Iterable<String>, LinkedList<String>>() {
+    private final Function<Iterable<String>, LinkedList<String>> applyFunction = new Function<Iterable<String>, LinkedList<String>>() {
         public LinkedList<String> apply(Iterable<String> contents) {
         	LinkedList<String> result = new LinkedList<String>();
         	for (String content : contents)
@@ -51,12 +51,12 @@ class SequenceNonBlocking {
     };
     
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable,LinkedList<String>> completionFunction = new Procedure2<Throwable,LinkedList<String>>() {
+    private final Procedure2<Throwable,LinkedList<String>> completionFunction = new Procedure2<Throwable,LinkedList<String>>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, LinkedList<String> result) {
             if (result != null) {
-                System.out.println("Nonblocking sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking Java sequence: " + result.size() + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -78,7 +78,7 @@ class SequenceNonBlocking {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    void doit() {
+    private void doit() {
         Future<LinkedList<String>> resultFuture = Futures.sequence(futures, context).map(applyFunction);
         resultFuture.onComplete(completionFunction);
     }

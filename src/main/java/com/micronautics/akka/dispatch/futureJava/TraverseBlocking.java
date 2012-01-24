@@ -35,22 +35,22 @@ class TraverseBlocking {
     private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates daemon threads. */
-    private ExecutionContext daemonContext = new ExecutionContext() {
+    private final ExecutionContext daemonContext = new ExecutionContext() {
         public void execute(Runnable r) { daemonExecutorService.execute(r); }
     };
 
     /** Maximum length of time to block while waiting for futures to complete */
-    private Duration timeout = Duration.create(10, SECONDS);
+    private final Duration timeout = Duration.create(10, SECONDS);
 
     /** Collection of String, which Futures.traverse will turn into a Future of a collection.
      * The futures will run under daemonContext. */
-    private ArrayList<String> urls = new ArrayList<String>();
+    private final ArrayList<String> urls = new ArrayList<String>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> initialValue = new ArrayList<String>();
+    protected final ArrayList<String> initialValue = new ArrayList<String>();
 
     /** Composable function for both versions. Remember that HttpGetter implements Callable. */
-    private Function<String, Future<String>> applyFunction = new Function<String, Future<String>>() {
+    private final Function<String, Future<String>> applyFunction = new Function<String, Future<String>>() {
         public Future<String> apply(final String url) {
             return Futures.future(new HttpGetter(url, "Simpler Concurrency"), daemonContext);
         }
@@ -63,7 +63,7 @@ class TraverseBlocking {
         urls.add("http://nbronson.github.com/scala-stm/");
     }
 
-    public void doit() {
+    private void doit() {
         Future<Iterable<String>> resultFuture = Futures.traverse(urls, applyFunction, daemonContext);
         // Await.result() blocks until the Future completes
         LinkedList<String> result = (LinkedList<String>) Await.result(resultFuture, timeout);
@@ -71,7 +71,7 @@ class TraverseBlocking {
         for (String r : result)
         	if (r.length()>0)
         		matchCount++;
-        System.out.println("Blocking traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
+        System.out.println("Blocking Java traverse: " + matchCount + " web pages contained 'Simpler Concurrency'.");
     }
     
     /** Demonstrates how to invoke sequence() and block until a result is available */

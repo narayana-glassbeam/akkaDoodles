@@ -23,35 +23,35 @@ public class FilterNonBlocking2b {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable runnable) { executorService.execute(runnable); }
     };
-    
-    private List<HttpGetterWithUrl> httpGetters = new LinkedList<HttpGetterWithUrl> (Arrays.asList(new HttpGetterWithUrl[] {
+
+    private final List<HttpGetterWithUrl> httpGetters = new LinkedList<HttpGetterWithUrl> (Arrays.asList(new HttpGetterWithUrl[] {
     	new HttpGetterWithUrl("http://akka.io/"),
     	new HttpGetterWithUrl("http://www.playframework.org/"),
     	new HttpGetterWithUrl("http://nbronson.github.com/scala-stm/")
-    })); 
+    }));
 
     /** Java type checking does not give clues as to the required types for Procedure2 */
-    private Procedure2<Throwable,UrlAndContents> completionFunction = new Procedure2<Throwable,UrlAndContents>() {
+    private final Procedure2<Throwable,UrlAndContents> completionFunction = new Procedure2<Throwable,UrlAndContents>() {
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, UrlAndContents result) {
-            if (result.contents != null) 
+            if (result.contents != null)
                 System.out.println("Nonblocking Java filter result: " + result.url);
             executorService.shutdown(); // terminates program
         }
     };
-      
-    /** Invoked after future completes 
+
+    /** Invoked after future completes
      * Java type checking does not give clues as to the required types for Function */
-    private Function<UrlAndContents, Boolean> filterFunction = new Function<UrlAndContents, Boolean>() {
+    private final Function<UrlAndContents, Boolean> filterFunction = new Function<UrlAndContents, Boolean>() {
     	public Boolean apply(UrlAndContents urlAndContents) {
             return urlAndContents.contents.indexOf("Simpler Concurrency")>=0;
         }
     };
 
-    
+
     private void doit() {
         for (HttpGetterWithUrl httpGetter : httpGetters) {
         	Future<UrlAndContents> resultFuture = Futures.future(httpGetter, context);
@@ -59,7 +59,7 @@ public class FilterNonBlocking2b {
             resultFuture.onComplete(completionFunction);
         }
     }
-    
+
     public static void main(String[] args) {
         FilterNonBlocking2b example = new FilterNonBlocking2b();
         example.doit();

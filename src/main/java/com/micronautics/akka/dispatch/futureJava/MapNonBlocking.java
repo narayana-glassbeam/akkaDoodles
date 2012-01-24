@@ -31,19 +31,19 @@ class MapNonBlocking {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /** Akka uses the execution context to manage futures under its control. This ExecutionContext creates regular threads. */
-    private ExecutionContext context = new ExecutionContext() {
+    private final ExecutionContext context = new ExecutionContext() {
         public void execute(Runnable r) { executorService.execute(r); }
     };
 
     /** Collection of futures, which Futures.sequence will turn into a Future of a collection.
      * These futures will run under a regular context. */
-    private ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
+    private final ArrayList<Future<String>> futures = new ArrayList<Future<String>>();
 
     /** Accumulates result during fold(), also provides initial results, if desired. */
-    protected ArrayList<String> result = new ArrayList<String>();
+    protected final ArrayList<String> result = new ArrayList<String>();
 
     /** Composable function for both versions */
-    private Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
+    private final Function2<ArrayList<String>, String, ArrayList<String>> applyFunction = new Function2<ArrayList<String>, String, ArrayList<String>>() {
         public ArrayList<String> apply(ArrayList<String> result, String contents) {
             if (contents.indexOf("Simpler Concurrency")>0)
                 result.add(contents);
@@ -52,12 +52,12 @@ class MapNonBlocking {
     };
     
     /** onComplete handler for nonblocking version */
-    private Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
+    private final Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
         
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, ArrayList<String> result) {
             if (result != null) {
-                System.out.println("Nonblocking version: " + result.size() + " web pages contained 'Simpler Concurrency'.");
+                System.out.println("Nonblocking Java map: " + result.size() + " web pages contained 'Simpler Concurrency'.");
             } else {
                 System.out.println("Exception: " + exception);
             }
@@ -79,7 +79,7 @@ class MapNonBlocking {
      * would exit before the onComplete() callback was invoked. This means that onComplete() must contain a means of
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
-    void doit() {
+    private void doit() {
     	result.clear();
         Future<ArrayList<String>> resultFuture = Futures.fold(result, futures, applyFunction, context);
         resultFuture.onComplete(completionFunction);
