@@ -14,11 +14,12 @@ object Zip extends App {
   val f1 = Future { 6 / 0 }
   val f2 = Future { "asdf" + "qwer" }
   val f3 = Future { 2 + 3 }
-  (f1 zip f2) onComplete { f =>
+  // awaiting Akka 2.0 M4
+  /*(f1 zip f2) onComplete { f =>
     f match {
       case Right(result)   => println("Nonblocking Zip Scala result: " + result)
       case Left(exception) => println("Nonblocking Zip Scala exception: " + exception)
     }
     executorService.shutdown(); // terminates program
-  }
+  }*/
 }

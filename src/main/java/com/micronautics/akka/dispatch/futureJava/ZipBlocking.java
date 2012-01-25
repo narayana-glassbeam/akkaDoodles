@@ -1,9 +1,10 @@
 package com.micronautics.akka.dispatch.futureJava;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
-import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
 import akka.dispatch.Futures;
@@ -36,9 +37,10 @@ class ZipBlocking {
     public void doit() {
         Future<Integer> futureException = Futures.future(callableException, context);
         Future<Integer> futureInt = Futures.future(callableInt, context);
-        Future<Integer> futureZip = futureException.zip(futureInt);
+        // awaiting Akka 2.0 M4
+        /*Future<Integer> futureZip = futureException.zip(futureInt);
         Integer result = (Integer) Await.result(futureZip, timeout);
-        System.out.println("Blocking Java Zip result: " + result);
+        System.out.println("Blocking Java Zip result: " + result);*/
     }
 
     public static void main(String[] args) {
