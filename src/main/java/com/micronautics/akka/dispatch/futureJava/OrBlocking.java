@@ -51,14 +51,14 @@ class OrBlocking {
 
 
     public void doit() {
-        Future<Integer> resultException = Futures.future(callableException, context);
-        Future<String> resultString = Futures.future(callableString, context);
-        Future<Integer> resultInt = Futures.future(callableInt, context);
-        Future<Integer> resultInt2 = Futures.future(callableInt2, context);
+        Future<Integer> futureException = Futures.future(callableException, context);
+        Future<String>  futureString    = Futures.future(callableString,    context);
+        Future<Integer> futureInt       = Futures.future(callableInt,       context);
+        Future<Integer> futureInt2      = Futures.future(callableInt2,      context);
         // Not allowed; all Or'd futures must be of same type in Java
-        //Future<Integer> resultOr = resultException.or(resultString.or(resultInt));
-        Future<Integer> resultOr = resultException.or(resultInt.or(resultInt2));
-        Integer result = (Integer) Await.result(resultOr, timeout);
+        //Future<Integer> futureOr = futureException.or(futureString.or(futureInt));
+        Future<Integer> futureOr = futureException.or(futureInt.or(futureInt2));
+        Integer result = (Integer) Await.result(futureOr, timeout);
         System.out.println("Blocking Java Or result: " + result);
     }
 

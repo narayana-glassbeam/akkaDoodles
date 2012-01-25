@@ -42,10 +42,10 @@ class OrNonBlocking {
 
 
     public void doit() {
-        Future<Integer> resultException = Futures.future(callableException, context);
-        Future<Integer> result5 = Futures.future(callable5, context);
-        Future<Integer> resultOr = resultException.or(result5);
-        resultOr.onComplete(completionFunction);
+        Future<Integer> futureException = Futures.future(callableException, context);
+        Future<Integer> futureInt       = Futures.future(callable5,         context);
+        Future<Integer> futureOr        = futureException.or(futureInt);
+        futureOr.onComplete(completionFunction);
     }
 
     public static void main(String[] args) {
