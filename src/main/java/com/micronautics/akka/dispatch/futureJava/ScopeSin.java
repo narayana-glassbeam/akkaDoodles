@@ -31,17 +31,25 @@ class ScopeSin {
             } else {
                 System.out.println("Exception: " + exception);
             }
-            executorService.shutdown(); // terminates program
+            executorService.shutdown(); // terminates this thread, and the program if no other threads are active
         }
     };
 
-    private final Callable<Integer> callable = new Callable<Integer>() {
+    private final Callable<Integer> callableSin1 = new Callable<Integer>() {
         public Integer call() {
             return 2 + 3 + offset;
         }
     };
 
+    private final Callable<Integer> callableSin2 = new Callable<Integer>() {
+        public Integer call() {
+            return 2 + 3 + accessor();
+        }
+    };
 
+
+    private int accessor() { return offset; }
+    
     /** Demonstrates how to invoke fold() asynchronously.
      * Regular threads are used, because execution continues past onComplete(), and the callback to onComplete()
      * needs to be available after the main program has finished execution. If daemon threads were used, the program
@@ -49,9 +57,11 @@ class ScopeSin {
      * terminating the program, or setting up another callback for some other purpose. The program could be terminated
      * with a call to System.exit(0), or by invoking executorService.shutdown() to shut down the thread. */
     public void doit() {
-        Future<Integer> resultFuture = Futures.future(callable, context);
-        resultFuture.onComplete(completionFunction);
+        Future<Integer> resultFutureSin1 = Futures.future(callableSin1, context);
+        Future<Integer> resultFutureSin2 = Futures.future(callableSin2, context);
         offset = 42;
+        resultFutureSin1.onComplete(completionFunction);
+        resultFutureSin2.onComplete(completionFunction);
         System.out.println("End of mainline, offset = " + offset);
     }
 
