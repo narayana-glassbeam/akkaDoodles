@@ -4,16 +4,14 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import com.micronautics.concurrent.DaemonExecutors;
 
 import akka.dispatch.Await;
 import akka.dispatch.ExecutionContext;
 import akka.dispatch.Future;
 import akka.dispatch.Futures;
-import akka.japi.Procedure2;
 import akka.util.Duration;
+
+import com.micronautics.concurrent.DaemonExecutors;
 
 class OrBlocking {
     private final ExecutorService daemonExecutorService = DaemonExecutors.newFixedThreadPool(10);
