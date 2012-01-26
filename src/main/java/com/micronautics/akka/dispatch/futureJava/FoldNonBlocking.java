@@ -52,7 +52,7 @@ class FoldNonBlocking {
     };
 
     /** onComplete handler for nonblocking version */
-    private final Procedure2<Throwable,ArrayList<String>> completionFunction = new Procedure2<Throwable,ArrayList<String>>() {
+    private final Procedure2<Throwable, ArrayList<String>> completionFunction = new Procedure2<Throwable, ArrayList<String>>() {
 
     	/** This method is executed asynchronously, probably after the mainline has completed */
         public void apply(Throwable exception, ArrayList<String> result) {
