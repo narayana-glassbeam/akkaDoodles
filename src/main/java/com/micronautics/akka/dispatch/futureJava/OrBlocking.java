@@ -50,6 +50,7 @@ class OrBlocking {
 
     public void doit() {
         Future<Integer> futureException = Futures.future(callableException, context);
+        @SuppressWarnings("unused") 
         Future<String>  futureString    = Futures.future(callableString,    context);
         Future<Integer> futureInt       = Futures.future(callableInt,       context);
         Future<Integer> futureInt2      = Futures.future(callableInt2,      context);
