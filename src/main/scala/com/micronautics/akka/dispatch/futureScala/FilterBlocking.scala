@@ -1,14 +1,15 @@
 package com.micronautics.akka.dispatch.futureScala
 
 import java.net.URL
-import java.util.concurrent.Executors
+
+import com.micronautics.concurrent.DaemonExecutors
+
+import akka.dispatch.Await
 import akka.dispatch.ExecutionContext
 import akka.dispatch.Future
+import akka.util.duration.intToDurationInt
 import scalax.io.JavaConverters.asInputConverter
 import scalax.io.Codec
-import com.micronautics.concurrent.DaemonExecutors
-import akka.dispatch.Await
-import akka.util.duration._
 
 /**
   * '''Future.filter()''' {{{def filter (predicate: (T) => Boolean): Future[T]}}}
