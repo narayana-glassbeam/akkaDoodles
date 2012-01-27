@@ -11,13 +11,12 @@ import akka.dispatch.Await
 import akka.util.duration._
 
 /**
-  * '''Future.filter()''' {{{def filter (pred: (T) => Boolean): Future[T]}}}
+  * '''Future.filter()''' {{{def filter (predicate: (T) => Boolean): Future[T]}}}
   *
-  * This example uses future filters to return a list of Future[String] containing the URLs of web pages that contain the string {{{Simpler Concurrency}}}.
+  * This example uses future filters to return a list of Future[String] containing the contents of web pages that contain the string {{{Simpler Concurrency}}}.
+  * Future filters are applied after the future completes.
   *
-  * Filters are applied after the future completes, so onComplete() is called implicitly by the filter. If you provide Future.onComplete(), the filter will be evaluated before your onComplete()
-  *
-  * There is no way for a {{{Future}}} to represent the lack of results, so {{{Future}}}s that fail a filter contain a {{{MatchError}}} exception (on the Left).
+  * {{{Future}}}s that fail a filter contain a {{{MatchError}}} exception (on the Left).
   */
 object FilterBlocking extends App {
   val daemonExecutorService = DaemonExecutors.newFixedThreadPool(10)
@@ -28,16 +27,25 @@ object FilterBlocking extends App {
     "http://nbronson.github.com/scala-stm/"
   )
 
-  // print contents of pages containing the string "Simpler Concurrency"
-  val futures = urlStrs map (urlStr =>
-    Future(httpGet(urlStr)) filter (pageContents =>
-      pageContents.indexOf("Simpler Concurrency")>=0))
-  val futureList = Future.sequence(futures)
-  /*Await.result(futureList.map { items => map { contents =>
-      println("Scala Filter blocking result: " + contents.substring(0,20) + "...") }
-    }, 1 second
-  )*/
+  val contentList = for (urlStr<-urlStrs) yield filterPage(urlStr)
+  // Use List.filter to prune out all the pages that had a MatchError (they are stored as empty strings), 
+  // then print surrounding 80 characters of matching pages 
+  contentList filter { _.length>0 } foreach { contents =>
+    val matchStart = contents.indexOf("Simpler Concurrency")
+    println("Scala Filter blocking result: ..." + contents.substring(matchStart-40, matchStart+40) + "...")
+  }
 
+  /** @return the contents of the page if it contains the string "Simpler Concurrency",
+   * otherwise return the empty string */
+  def filterPage(urlStr:String):String = {
+     val f1 = Future(httpGet(urlStr))
+     val f2 = f1.filter(_.indexOf("Simpler Concurrency")>=0).recover {
+       // value for f2 is the empty string if the evaluated future fails the filter predicate
+       case m: MatchError ⇒ "" 
+    }
+    Await.result(f2, 5 seconds)
+  }
+  
   /** Fetches contents of web page pointed to by urlStr */
   def httpGet(urlStr:String):String = {
     new URL(urlStr).asInput.slurpString(Codec.UTF8)

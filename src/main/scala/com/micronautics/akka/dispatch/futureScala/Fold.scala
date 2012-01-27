@@ -24,7 +24,7 @@ object Fold extends App {
       case Right(result)   => println("Fold Scala result: " + result)
       case Left(exception) => println("Fold Scala exception: " + exception)
     }
-    System.exit(0)
+    executorService.shutdown(); // terminates program
   }
 
   /** Pretend this method consumes a lot of computational resource */
