@@ -5,7 +5,6 @@ import akka.dispatch.Future
 import akka.dispatch.Await
 import akka.dispatch.ExecutionContext
 import akka.util.duration._
-import scala.MatchError
 import com.micronautics.concurrent.DaemonExecutors
 
 

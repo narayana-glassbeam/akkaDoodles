@@ -2,8 +2,7 @@ package com.micronautics.akka.dispatch.futureScala
 
 import java.util.concurrent.Executors
 
-import akka.dispatch.ExecutionContext
-import akka.dispatch.Future
+import akka.dispatch.{ExecutionContext, Future}
 
 
 /** '''Future.fold()''' 

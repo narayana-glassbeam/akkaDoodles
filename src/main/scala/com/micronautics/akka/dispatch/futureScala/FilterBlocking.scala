@@ -4,9 +4,7 @@ import java.net.URL
 
 import com.micronautics.concurrent.DaemonExecutors
 
-import akka.dispatch.Await
-import akka.dispatch.ExecutionContext
-import akka.dispatch.Future
+import akka.dispatch.{Await, ExecutionContext, Future}
 import akka.util.duration.intToDurationInt
 import scalax.io.JavaConverters.asInputConverter
 import scalax.io.Codec
