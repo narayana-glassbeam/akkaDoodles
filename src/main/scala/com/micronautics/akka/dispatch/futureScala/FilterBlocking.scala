@@ -12,8 +12,6 @@ import scalax.io.JavaConverters.asInputConverter
 import scalax.io.Codec
 
 /**
-  * '''Future.filter()''' {{{def filter (predicate: (T) => Boolean): Future[T]}}}
-  *
   * This example uses future filters to return a list of Future[String] containing the contents of web pages that contain the string {{{Simpler Concurrency}}}.
   * Future filters are applied after the future completes.
   *
