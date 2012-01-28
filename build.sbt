@@ -28,3 +28,47 @@ libraryDependencies ++= Seq(
 )
 
 seq(assemblySettings: _*)
+
+
+logLevel := Level.Error
+
+// Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow
+
+// define the statements initially evaluated when entering 'console', 'console-quick', or 'console-project'
+initialCommands := """
+  import akka.dispatch.{Await,ExecutionContext,Future}
+  import akka.util.duration._
+  import java.net.URL
+  import java.util.concurrent.Executors
+  import scala.MatchError
+  import scalax.io.JavaConverters.asInputConverter
+  import scalax.io.Codec
+  import com.micronautics.akka.dispatch.futureScala._
+  import com.micronautics.concurrent._
+  import com.micronautics.util._
+  //
+  val executorService = Executors.newFixedThreadPool(10)
+  implicit val context = ExecutionContext.fromExecutor(executorService)
+  //
+  val daemonExecutorService = DaemonExecutors.newFixedThreadPool(10)
+  //implicit val daemonContext = ExecutionContext.fromExecutor(daemonExecutorService)
+  //
+  def expensiveCalc(x:Int) = { x * x }
+  //
+  def httpGet(urlStr:String):String = {
+    new URL(urlStr).asInput.slurpString(Codec.UTF8)
+  }
+  //
+  //val f = Future { println("Evaluating future"); httpGet("http://akka.io") }
+  //
+  val urlStrs = List (
+    "http://akka.io",
+    "http://www.playframework.org",
+    "http://nbronson.github.com/scala-stm"
+  )
+"""
+
+// Only show warnings and errors on the screen for compilations.
+// This applies to both test:compile and compile and is Info by default
+logLevel in compile := Level.Warn
+
