@@ -1,3 +1,6 @@
+Composable Futures with Akka 2.0
+================================
+This is the companion microsite for the book.
 Although you can download compressed source code from this site, I suggest you clone the git repository instead 
 so you can keep up to date more easily.
 
