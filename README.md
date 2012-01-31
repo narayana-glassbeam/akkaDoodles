@@ -16,8 +16,8 @@ or a problem with a code example, I'd love to talk with you about it.
 
 Mike Slinn
 
-Google+: `[mslinn](https://plus.google.com/115543354052259422614/posts)`  
-Twitter: `[mslinn](https://twitter.com/#!/mslinn)`
+Google+: [mslinn](https://plus.google.com/115543354052259422614/posts)  
+Twitter: [mslinn](https://twitter.com/#!/mslinn)
 
 415-367-3789 
 
