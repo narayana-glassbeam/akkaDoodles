@@ -1,6 +1,10 @@
+package com.micronautics.akka.actor.wyatt
+
+import akka.actor._
+
 /** A simple Request/Response one-shot Akka Actor example
   * @author Derek Wyatt */
-object ReqRspActor {
+/*object ReqRspActor {
   object ReqRspProtocol {
     case class UnknownMessage(msg: String) extends Exception(msg)
     case class FutureException(exception: Throwable)
@@ -63,3 +67,4 @@ abstract class ReqRspActor(recipient: ActorRef, message: Any) extends Actor {
     DoNotResend
   }
 }
+  */

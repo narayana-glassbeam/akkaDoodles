@@ -1,6 +1,9 @@
+import akka.actor.{PoisonPill, OneForOneStrategy, Actor}
+
 /** Pattern for async exception handling?
   * @author Derek Wyatt */
-class NewRouter extends Actor {
+
+/* class NewRouter extends Actor {
   self.faultHandler = OneForOneStrategy(List(classOf[Throwable]), 5, 5000)
   var sendCount = 0
   def receive = {
@@ -26,4 +29,5 @@ class NewRouter extends Actor {
     case GetSendCount =>
       self.reply_?(sendCount)
   }
-} 
+}
+*/

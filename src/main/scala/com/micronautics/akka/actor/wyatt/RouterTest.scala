@@ -9,7 +9,7 @@ import akka.actor._
 import akka.actor.Actor._
 import akka.testkit.TestKit
 import akka.util.duration._
-
+/*
 class PatternTests extends WordSpec
                       with BeforeAndAfterEach
                       with MustMatchers
@@ -42,4 +42,4 @@ class PatternTests extends WordSpec
       a.stop
     } // }}}2
   } // }}}1
-} 
+} */

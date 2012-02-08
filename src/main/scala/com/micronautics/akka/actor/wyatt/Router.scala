@@ -1,6 +1,6 @@
 import akka.actor._
 import akka.actor.Actor._
-import akka.config.Supervision._
+//import akka.config.Supervision._
 
 import scala.collection.mutable.Map
 
@@ -11,7 +11,8 @@ case object GetSendCount
 
 /** Pattern for async exception handling?
   * @author Derek Wyatt */
-object RemoteServer {
+
+/* object RemoteServer {
   var failOnTag = ""
   def send(tag: String, echoTo: Option[ActorRef]) {
     if (tag == failOnTag)
@@ -46,4 +47,5 @@ class Router extends Actor {
     case GetSendCount =>
       self.reply_?(sendCount)
   }
-} 
+}
+*/

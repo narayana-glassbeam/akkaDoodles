@@ -19,12 +19,13 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest"                 %% "scalatest"     % "1.6.1"        % "test" withSources(),
+  "org.scalatest"                 %% "scalatest"     % "1.6.1"              % "test" withSources(),
   "com.typesafe.akka"             %  "akka-actor"    % "latest.integration" withSources(),
+  "com.typesafe.akka"             %  "akka-testkit"  % "latest.integration" withSources(),
   "com.github.scala-incubator.io" %% "scala-io-core" % "latest.integration" withSources(),
   "com.github.scala-incubator.io" %% "scala-io-file" % "latest.integration" withSources(),
-  "org.apache.httpcomponents"     %  "httpclient"    % "4.1.2"        withSources(),
-  "org.scala-tools"               %% "scala-stm"     % "0.5-SNAPSHOT" withSources()
+  "org.apache.httpcomponents"     %  "httpclient"    % "4.1.2"              withSources(),
+  "org.scala-tools"               %% "scala-stm"     % "0.5-SNAPSHOT"       withSources()
 )
 
 seq(assemblySettings: _*)

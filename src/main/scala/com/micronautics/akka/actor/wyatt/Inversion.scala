@@ -1,15 +1,12 @@
 import akka.actor._
 import akka.actor.Actor._
-import akka.dispatch.{Future, CompletableFuture, DefaultCompletableFuture, FutureTimeoutException}
+//import akka.dispatch.{Future, CompletableFuture, DefaultCompletableFuture, FutureTimeoutException}
 
 /** Inversion of actor messaging control example. !, !! and !!! are not defined on the Actor, 
   * they are defined on the message
   * @author Derek Wyatt */
 
-/************************************************
- * Toolkit stuff
- ************************************************/
-
+/*
 // Something to derive from
 trait Response
 
@@ -167,5 +164,4 @@ object Main {
     Thread.sleep(1000)
     c.stop
     s.stop
-  }
-}
+  }*/
