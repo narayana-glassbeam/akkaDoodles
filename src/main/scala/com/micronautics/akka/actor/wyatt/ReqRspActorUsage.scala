@@ -1,6 +1,6 @@
 /** A simple Request/Response one-shot Akka Actor example
   * @author Derek Wyatt */
-  
+/*  
 ReqRspActor.spawn(self)(new ReqRspActor(someServer, DoSomethingForMe) {
   import ReqRspActor._
   def receiveResponse: Receive = {
@@ -14,3 +14,4 @@ ReqRspActor.spawn(self)(new ReqRspActor(someServer, DoSomethingForMe) {
     }
   }
 })
+*/

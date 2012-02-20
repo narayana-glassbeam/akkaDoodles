@@ -1,6 +1,6 @@
 /** Pattern for async exception handling?
   * @author Derek Wyatt */
-  
+/*  
 "run fine when death occurs2" in { // {{{2
   RemoteServer.failOnTag = "Die"
   val a = actorOf[NewRouter].start
@@ -12,3 +12,4 @@
   a !! GetSendCount must be (Some(1))
   a.stop
 } // }}}2 
+*/
